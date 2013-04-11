@@ -1,20 +1,17 @@
 package cc.openhome;
 
-import static java.nio.file.Files.newDirectoryStream;
-import static java.nio.file.Files.readAllBytes;
-import static java.nio.file.Files.write;
+import static java.nio.file.Files.*;
 import static java.nio.file.StandardOpenOption.TRUNCATE_EXISTING;
 import static java.util.regex.Pattern.compile;
 
 import java.io.IOException;
-import java.nio.file.DirectoryStream;
-import java.nio.file.Path;
+import java.nio.file.*;
 import java.util.regex.Pattern;
 
 public class AdSenseRemover {
 	private static Pattern jsRegex = compile("<script *.*>(.*\\s*)*?</script>");
 	
-    public static void findPagesAndRemoveJs(Path file, String charsetName) throws IOException {
+    public static void removeJsFromPagesUnder(Path file, String charsetName) throws IOException {
         try(DirectoryStream<Path> pages = newDirectoryStream(file, "*.{htm,html}")) {
             for (Path page: pages) { removeJs(page, charsetName); }
         }
