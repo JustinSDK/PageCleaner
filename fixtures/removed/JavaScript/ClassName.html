@@ -1,0 +1,112 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html dir="ltr" lang="en">
+  <head>
+    <meta content="text/html; charset=UTF-8" http-equiv="content-type">
+    <title>The className Property</title>
+    <meta content="caterpillar" name="author">
+    <meta content="JavaScript" name="keywords">
+    <link href="css/std.css" rel="stylesheet" type="text/css">
+  </head>
+  <body>
+    <div class="header">
+      <div class="hgroup">
+        <h3><a href="http://openhome.cc/eGossip/">From eGossip@Openhome</a></h3>
+        <h1><a href="index.html">JavaScript Essence: The className Property<br>
+          </a></h1>
+      </div>
+    </div>
+    <div class="article">
+      <div style="text-align: right;"><a href="../../Gossip/JavaScript/ClassName.html">中文</a></div>
+      <br>
+      Using code to change multiple properties of <span class="courier">style</span> is inefficient. The simple way is defining style sheets and using selectors to match elements. The style sheets will change multiple properties of <span
+        class="courier">style</span>. A markup's <span class="courier">class</span> attribute is used to classify elements and often as the basis of applied style sheets. Modifying the <span
+        class="courier">className</span> property is a common way to change an element's style. <br>
+      <br>
+      The <span class="courier">class</span> attribute can contain multiple class names. The troublesome thing is that, if there're multiple class names, they should be separated by space. Checking if there's a class name contained in the <span
+        class="courier">class</span> attribute needs parsing a space separated string. Adding or removing a class name needs appending a string to this string or removing a sub string from it. <br>
+      <br>
+      The following example demonstrates three functions about how to check, add, remove, or toggle class names.<br>
+      <ul>
+        <li><a href="samples/ClassName-1.html">ClassName-1.html</a></li>
+      </ul>
+      <pre>&lt;html&gt;
+    &lt;head&gt;
+        &lt;meta content="text/html; charset=UTF-8" http-equiv="content-type"&gt;
+        &lt;style type="text/css"&gt;
+            .released {
+                border-width: 1px;
+                border-color: red;
+                border-style: dashed;
+            }
+            .pressed {
+                border-width: 5px;
+                border-color: black;
+                border-style: solid;
+            }
+        &lt;/style&gt;
+        &lt;script type="text/javascript"&gt;
+            window.onload = function() {
+                function hasClass(element, clz) {
+                    var clzs = element.className;
+                    if(!clzs) { // no class attribute
+                        return false;
+                    }
+                    if(clzs === clz) {
+                        return true;
+                    }
+                    return clzs.search('\\b' + clz + '\\b') !== -1;
+                }
+                function addClass(element, clz) {
+                    if(!hasClass(element, clz)) {
+                        if(element.className) {
+                            clz = ' ' + clz;
+                        }
+                        element.className += clz;
+                    }
+                }
+                function removeClass(element, clz) {
+                    element.className = element.className.replace(
+                        new RegExp('\\b' + clz + '\\b\\s*', 'g'), '');
+                }
+                function toggleClass(element, clz1, clz2) {
+                    if(hasClass(element, clz1)) {
+                        removeClass(element, clz1);
+                        addClass(element, clz2);
+                    }
+                    else if(hasClass(element, clz2)) {
+                        removeClass(element, clz2);
+                        addClass(element, clz1);
+                    }
+                }
+                document.getElementById('logo').onclick = function() {
+                    toggleClass(this, 'released', 'pressed');
+                };
+            };
+        &lt;/script&gt;
+    &lt;/head&gt;
+    &lt;body&gt;
+        &lt;img id="logo" class='released' 
+             src="../images/caterpillar_small.jpg"&gt;
+    &lt;/body&gt;
+&lt;/html&gt;
+</pre><br>
+      <br>
+      <p></p>
+      <p></p>
+      <ul>
+      </ul>
+    </div>
+    <div class="aside">
+      
+       <br>
+      <br>
+      
+       <br>
+      <br>
+      
+       <br>
+      <br>
+      <br>
+    </div>
+      </body>
+</html>

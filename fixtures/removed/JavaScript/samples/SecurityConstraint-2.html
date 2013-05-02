@@ -1,0 +1,19 @@
+<html>
+  <head>
+    <script type="text/javascript">
+        window.onload = function() {
+            document.getElementById('size').onclick = function() {
+                var size = document.getElementById('upload')
+                                   .files.item(0).size;
+                document.getElementById('console')
+                        .innerHTML = 'Size: ' + size;
+            };
+        };
+    </script>
+  </head>
+  <body>
+      <input id="upload" name="upload" type="file"><br>
+      <button id="size">Size</button><br>
+      <span id="console"></span>
+  </body>
+</html>

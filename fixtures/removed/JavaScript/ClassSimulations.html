@@ -1,0 +1,164 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html dir="ltr" lang="en">
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <title>Class Simulations</title>
+    <meta content="caterpillar" name="author">
+    <meta content="JavaScript class simulations" name="keywords">
+    <link href="css/std.css" rel="stylesheet" type="text/css">
+  </head>
+  <body>
+    <div class="header">
+      <div class="hgroup">
+        <h3><a href="http://openhome.cc/eGossip/">From eGossip@Openhome</a></h3>
+        <h1><a href="index.html">JavaScript Essence: Class Simulations<br>
+          </a></h1>
+      </div>
+    </div>
+    <div class="article">
+      <div align="right"><a href="../../Gossip/JavaScript/ClassSimulation.html">中文</a><br>
+      </div>
+      <br>
+      Class simulations are comprehensive use of concepts mentioned in the previous articles. Take class encapsulation and inheritance for examples. Basically, you can implement them as follows: <br>
+      <blockquote class="courier"><strong><span class="courier">function Circle(x, y, r) {</span><br>
+          <span class="courier">&nbsp;&nbsp;&nbsp; // states of an instance</span><br>
+          <span class="courier">&nbsp;&nbsp;&nbsp; this.x = x;</span><br>
+          <span class="courier">&nbsp;&nbsp;&nbsp; this.y = y;</span><br>
+          <span class="courier">&nbsp;&nbsp;&nbsp; this.r = r;</span><br>
+          <span class="courier">}</span><br>
+          <br>
+          <span class="courier">// similar to the static method of the Java class</span><br>
+          <span class="courier">Circle.PI = 3.14159; </span><br>
+          <br>
+          <span class="courier">// shared instance methods are defined on the prototype object</span><br>
+          <span class="courier">Circle.prototype.area = function() {</span><br>
+          <span class="courier">&nbsp;&nbsp;&nbsp; return this.r * this.r * Circle.PI;</span><br>
+          <span class="courier">};</span><br>
+          <span class="courier">Circle.prototype.toString = function() {</span><br>
+          <span class="courier">&nbsp;&nbsp;&nbsp; var text = [];</span><br>
+          <span class="courier">&nbsp;&nbsp;&nbsp; for(var p in this) {</span><br>
+          <span class="courier">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; if(typeof this[p] != 'function') {</span><br>
+          <span class="courier">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; text.push(p + ':' + this[p]);</span><br>
+          <span class="courier">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }</span><br>
+          <span class="courier">&nbsp;&nbsp;&nbsp; }</span><br>
+          <span class="courier">&nbsp;&nbsp;&nbsp; return '[' + text.join() + ']';</span><br>
+          <span class="courier">};</span><br>
+          <span class="courier"></span><br>
+          <span class="courier">function Cylinder(x, y, r, h) {</span><br>
+          &nbsp;&nbsp;&nbsp; <span class="courier">// call the constructor of the parent class</span><br>
+          <span class="courier">&nbsp;&nbsp;&nbsp; Circle.call(this, x, y, r); </span><br>
+          <span class="courier">&nbsp;&nbsp;&nbsp; this.h = h;</span><br>
+          <span class="courier">}</span><br>
+          <br>
+          <span class="courier">// prototype-based inheritance</span><br>
+          <span class="courier">Cylinder.prototype = new Circle();</span><br>
+          <br>
+          <span class="courier">/* <br>
+            &nbsp;*&nbsp; set the constructor function Cylinder<br>
+            &nbsp;*&nbsp; as the constructor property of prototype</span> <br>
+          &nbsp;*/<br>
+          <span class="courier">Cylinder.prototype.constructor = Cylinder;</span><br>
+          <br>
+          <span class="courier">/* <br>
+            &nbsp;*&nbsp; the following properties will be created <br>
+            &nbsp;*&nbsp; when creating an instance with the new operator, <br>
+            &nbsp;*&nbsp; so currently they are not necessary</span> <br>
+          &nbsp;*/<br>
+          <span class="courier">delete Cylinder.prototype.x;</span><br>
+          <span class="courier">delete Cylinder.prototype.y;</span><br>
+          <span class="courier">delete Cylinder.prototype.r;</span><br>
+          <br>
+          <span class="courier">// shared instance methods are defined on the prototype</span><br>
+          <span class="courier">Cylinder.prototype.volumn = function() {</span><br>
+          <span class="courier">&nbsp;&nbsp;&nbsp; return this.area() * this.h;</span><br>
+          <span class="courier">};</span></strong><br>
+      </blockquote>
+      You can encapsulate the above code flow to look more like a class definition. For instance, you can encapsulate the process of creating a class. <br>
+      <blockquote><strong><span class="courier">var Class = {};</span><br>
+          <span class="courier">Class.create = function(methods) {</span><br>
+          <span class="courier">&nbsp;&nbsp;&nbsp; var Clz = methods.initialize;</span><br>
+          <span class="courier">&nbsp;&nbsp;&nbsp; for(var mth in methods) {</span><br>
+          <span class="courier">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; if(mth != 'initialize') {</span><br>
+          <span class="courier">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Clz.prototype[mth] = methods[mth];</span><br>
+          <span class="courier">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }</span><br>
+          <span class="courier">&nbsp;&nbsp;&nbsp; }</span><br>
+          <span class="courier">&nbsp;&nbsp;&nbsp; return Clz;</span><br>
+          <span class="courier">};</span></strong><br>
+        <span class="courier"></span></blockquote>
+      Then you can use as follows:<br>
+      <blockquote><strong><span class="courier">var Circle = Class.create(</span><span
+            class="courier highlight">{<br>
+            &nbsp;&nbsp;&nbsp; // similar to the constructor of the class<br>
+            &nbsp;&nbsp;&nbsp; initialize : function(x, y, r) {<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; this.x = x;<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; this.y = y;<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; this.r = r;<br>
+            &nbsp;&nbsp;&nbsp; },<br>
+            &nbsp;&nbsp;&nbsp; area : function() {<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; return Math.PI * Math.pow(this.r, 2);<br>
+            &nbsp;&nbsp;&nbsp; },<br>
+            &nbsp;&nbsp;&nbsp; toString : function() {<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; var text = [];<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; for(var p in this) {<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; if(typeof this[p] != 'function') {<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; text.push(p + ':' + this[p]);<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; return '[' + text.join() + ']';<br>
+            &nbsp;&nbsp;&nbsp; }<br>
+            }</span><span class="courier">);<br>
+            var circle = new Circle(10, 10, 5);</span></strong><br>
+      </blockquote>
+      <br>
+      If you want to encapsulate the process of inheriting a class, you can do as follows: <br>
+      <blockquote><strong><span class="courier">Class.extend = function(Superclz, methods) {</span><br>
+          <span class="courier">&nbsp;&nbsp;&nbsp; var Subclz = this.create(methods);</span><br>
+          <span class="courier">&nbsp;&nbsp;&nbsp; var subproto = Subclz.prototype;</span><br>
+          <span class="courier">&nbsp;&nbsp;&nbsp; Subclz.prototype = new Superclz();</span><br>
+          <span class="courier">&nbsp;&nbsp;&nbsp; for(var p in Subclz.prototype) {</span><br>
+          <span class="courier">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; if(Subclz.prototype.hasOwnProperty(p)) {</span><br>
+          <span class="courier">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; delete Subclz.prototype[p];</span><br>
+          <span class="courier">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }</span><br>
+          <span class="courier">&nbsp;&nbsp;&nbsp; }</span><br>
+          <span class="courier">&nbsp;&nbsp;&nbsp; Subclz.prototype.constructor = Subclz;</span><br>
+          <span class="courier">&nbsp;&nbsp;&nbsp; for(var p in subproto) {</span><br>
+          <span class="courier">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Subclz.prototype[p] = subproto[p];</span><br>
+          <span class="courier">&nbsp;&nbsp;&nbsp; }</span><br>
+          <span class="courier">&nbsp;&nbsp;&nbsp; return Subclz;</span><br>
+          <span class="courier">};</span><br>
+        </strong></blockquote>
+      For example, you can do as follows to inherit the <span class="courier">Circle</span> class defined in the above code.<br>
+      <blockquote><strong><span class="courier">var Cylinder = Class.extend(</span><span
+            class="courier highlight">Circle, {<br>
+            &nbsp;&nbsp;&nbsp; initialize : function(x, y, r, h) {<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Circle.call(this, x, y, r);<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; this.h = h;<br>
+            &nbsp;&nbsp;&nbsp; },<br>
+            &nbsp;&nbsp;&nbsp; volumn : function() {<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; return this.area() * this.h;<br>
+            &nbsp;&nbsp;&nbsp; }<br>
+            }</span><span class="courier">);<br>
+            var cylinder = new Cylinder(10, 10, 5, 15);</span></strong><strong><br>
+        </strong></blockquote>
+      The above code only shows basic ideas of how to simulate class-based features. In fact, there are many design approaches depending on the extent or style of simulation.<br>
+      <br>
+      <br>
+      <p></p>
+      <p></p>
+      <ul>
+      </ul>
+    </div>
+    <div class="aside">
+      
+       <br>
+      <br>
+      
+       <br>
+      <br>
+      
+       <br>
+      <br>
+      <br>
+    </div>
+      </body>
+</html>

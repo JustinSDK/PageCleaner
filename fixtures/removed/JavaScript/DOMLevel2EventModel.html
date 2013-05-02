@@ -1,0 +1,207 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html dir="ltr" lang="en">
+  <head>
+    <title>DOM Level 2 Event Model</title>
+    <meta content="caterpillar" name="author">
+    <meta content="JavaScript function bubbling capturing" name="keywords">
+    <link href="css/std.css" rel="stylesheet" type="text/css">
+    <meta content="text/html; charset=UTF-8" http-equiv="content-type">
+  </head>
+  <body>
+    <div class="header">
+      <div class="hgroup">
+        <h3><a href="http://openhome.cc/eGossip/">From eGossip@Openhome</a></h3>
+        <h1><a href="index.html">JavaScript Essence: DOM Level 2 Event Model<br>
+          </a></h1>
+      </div>
+    </div>
+    <div class="article">
+      <div style="text-align: right;"><a href="../../Gossip/JavaScript/DOML2EventModel.html">中文</a></div>
+      One of the drawbacks of Basic Event Model is, you can register only one handler. If you want to register multiple event handlers, it doesn't work to do the following: <br>
+      <div class="courier" style="margin-left: 40px;"><span><strong>window.onload = function() {</strong></span><span><strong><br>
+          </strong></span><span><strong>&nbsp;&nbsp;&nbsp; // handler1</strong></span><span><strong><br>
+          </strong></span><span><strong>};</strong></span><span><strong><br>
+          </strong></span><span><strong>window.onload = function() {</strong></span><span><strong><br>
+          </strong></span><span><strong>&nbsp;&nbsp;&nbsp; // handler2</strong></span><span><strong><br>
+          </strong></span><span><strong>};</strong></span></div>
+      <br>
+      In the above example, <span class="courier">window.onload</span> will refer to the second function and the first one will be discarded. When an event happens, calling two or more functions in the <a
+        href="BasicEventModel.html">Basic Event Model</a> can only be done indirectly. The easiest way is ... <br>
+      <div class="courier" style="margin-left: 40px;"><span><strong>function handler1() {</strong></span><span><strong><br>
+          </strong></span><span><strong>}</strong></span><span><strong><br>
+          </strong></span><span><strong>function handler2() {</strong></span><span><strong><br>
+          </strong></span><span><strong>}</strong></span><span><strong><br>
+          </strong></span><span><strong>window.onload = function() {</strong></span><span><strong><br>
+          </strong></span><span><strong>&nbsp;&nbsp;&nbsp; handler1();</strong></span><span><strong><br>
+          </strong></span><span><strong>&nbsp;&nbsp;&nbsp; handler2();</strong></span><span><strong><br>
+          </strong></span><span><strong>};</strong></span></div>
+      <br>
+      But, ways such as this are usually hard to manage. DOM Level 2 standardizes the event model so it's called the Standard Event Model. DOM Level 2 Event Model allows us to register two or more event handlers. Internet Explorer, however, doesn't support DOM Level 2, so the following examples only work in standard-compliant browsers. (After Internet Explorer 9, DOM Level 2 Event Model finally gets better support.) <br>
+      <br>
+      DOM Level 2 Event Model uses the <span class="courier">addEventListener</span> function to add multiple event handlers. For instance, the first example in <a
+        href="BasicEventModel.html">Basic Event Model</a> can be re-implemented as follows: <br>
+      <ul>
+        <li><a href="samples/DOML2EventModel-1.html">DOML2EventModel-1.html</a></li>
+      </ul>
+      <pre>&lt;html&gt;
+    &lt;head&gt;
+        &lt;meta content="text/html; charset=UTF-8" http-equiv="content-type"&gt;
+        &lt;script type="text/javascript"&gt;
+            window.addEventListener('load', function() {
+                function handler() {
+                    document.getElementById('console').innerHTML 
+                         = 'Who\'s clicked: ' + this.id;
+                }
+                document.getElementById('btn1')
+                    .addEventListener('click', handler, false);
+                document.getElementById('btn2')
+                    .addEventListener('click', handler, false);
+            }, false);
+        &lt;/script&gt;
+    &lt;/head&gt;
+    &lt;body&gt;
+        &lt;button id="btn1"&gt;Button 1&lt;/button&gt;&lt;br&gt;
+        &lt;button id="btn2"&gt;Button 2&lt;/button&gt;&lt;br&gt;
+        &lt;div id="console"&gt;&lt;/div&gt;
+    &lt;/body&gt;
+&lt;/html&gt;</pre>
+      <br>
+      The first parameter of <span class="courier">addEventListener</span> accepts the event name without an <span
+        class="courier">'on'</span> prefix. The second parameter accepts an event handler. If the third one is <span
+        class="courier">false</span>, the specified event handler will be used in the bubbling phase, which will be explained soon. <br>
+      <br>
+      In the above example, I use <span class="courier">this</span> to retrieve the element which triggers the event currently. Though most DOM Level 2 compliant browsers support this way, it's not in the standard of that. The specification uses the <span
+        class="courier">currentTarget</span> property of an <span class="courier">Event</span> instance to return the element which triggers the event currently. <br>
+      <br>
+      In DOM Level 2 Event Model, the first parameter of an event handler accepts an <span
+        class="courier">Event</span> instance. Some events have a default action. Calling the <span
+        class="courier">preventDefault </span>function of the <span class="courier">Event</span> instance can prevent the default action. For Example, we can use the function to rewrite the third sample in <a
+        href="BasicEventModel.html">Basic Event Model</a>: <br>
+      <ul>
+        <li><a href="samples/DOML2EventModel-2.html">DOML2EventModel-2.html</a></li>
+      </ul>
+      <pre>&lt;html&gt;
+    &lt;head&gt;
+        &lt;meta content="text/html; charset=UTF-8" http-equiv="content-type"&gt;
+        &lt;script type="text/javascript"&gt;
+            window.addEventListener('load', function() {
+                document.form1.addEventListener('submit', function(event) {
+                    if(event.currentTarget.data.value.length === 0) {
+                        event.preventDefault();
+                    }
+                }, false);
+            }, false);
+        &lt;/script&gt;
+    &lt;/head&gt;
+    &lt;body&gt;
+        &lt;form name="form1" action="fake.do"&gt;
+            Input data: &lt;input name="data"&gt;&lt;br&gt;
+            &lt;button type="submit"&gt;Submit&lt;/button&gt;
+        &lt;/form&gt;
+    &lt;/body&gt;
+&lt;/html&gt;</pre>
+      <br>
+      There're two phases in DOM Level 2 Event Model. When an event happens, it'll propagate from document to the target element where you are operating on. This is called "Capturing Phase". Then, the event will propagate from the target element to document. This is called "Bubbling Phase". If the third parameter of the <span
+        class="courier">addEventListener</span> function is <span class="courier">true</span>, the event handler is a capturing event handler. Otherwise, it's a bubbling event handler.<br>
+      <br>
+      For example, we can rewrite the first sample in <a href="Event.html">Event</a>; set up handlers to observe two phase events. <br>
+      <ul>
+        <li><a href="samples/DOML2EventModel-3.html">DOML2EventModel-3.html</a></li>
+      </ul>
+      <pre>&lt;html&gt;
+    &lt;head&gt;
+        &lt;meta content="text/html; charset=UTF-8" http-equiv="content-type"&gt;
+        &lt;script type="text/javascript"&gt;
+            window.addEventListener('load', function() {
+                function handler(event) {
+                    document.getElementById('console').innerHTML += 
+                      '&lt;br&gt;&lt;b&gt;currentTarget.id:&lt;/b&gt; '
+                          + event.currentTarget.id + 
+                      ', &lt;b&gt;target.id:&lt;/b&gt; ' + event.target.id;
+                }
+                document.getElementById('bodyId')
+                    .addEventListener('click', handler, true);
+                document.getElementById('bodyId')
+                    .addEventListener('click', handler, false);
+                document.getElementById('divId')
+                    .addEventListener('click', handler, true);
+                document.getElementById('divId')
+                    .addEventListener('click', handler, false);
+                document.getElementById('btnId')
+                    .addEventListener('click', handler, true);
+                document.getElementById('btnId')
+                    .addEventListener('click', handler, false);
+            }, false);
+        &lt;/script&gt;
+    &lt;/head&gt;
+    &lt;body id="bodyId"&gt;
+        &lt;div id="divId"&gt;&lt;button id="btnId"&gt;Click me&lt;/button&gt;&lt;/div&gt;
+        &lt;span id="console"&gt;&lt;/span&gt;
+    &lt;/body&gt;
+&lt;/html&gt;</pre>
+      <br>
+      The target element can be got from the <span class="courier">target</span> property of the <span
+        class="courier">Event</span> instance. Clicking the button will cause the following result. It can be observed that the event propagate from outside to inside, and then from inside to outside. <br>
+      <div class="courier" style="margin-left: 40px;"><span><strong>currentTarget.id: bodyId, target.id: btnId</strong></span><span><strong><br>
+          </strong></span><span><strong>currentTarget.id: divId, target.id: btnId</strong></span><span><strong><br>
+          </strong></span><span><strong>currentTarget.id: btnId, target.id: btnId</strong></span><span><strong><br>
+          </strong></span><span><strong>currentTarget.id: btnId, target.id: btnId</strong></span><span><strong><br>
+          </strong></span><span><strong>currentTarget.id: divId, target.id: btnId</strong></span><span><strong><br>
+          </strong></span><span><strong>currentTarget.id: bodyId, target.id: btnId</strong></span><strong><br>
+        </strong></div>
+      <br>
+      The <span class="courier">stopPropagation</span> function of an <span
+        class="courier">Event</span> instance can stop the event propagation. For example, if the above sample only registers event bubbling handlers, stopping the event propagation can be done as follows: <br>
+      <ul>
+        <li><a href="samples/DOML2EventModel-4.html">DOML2EventModel-4.html</a></li>
+      </ul>
+      <pre>&lt;html&gt;
+    &lt;head&gt;
+        &lt;meta content="text/html; charset=UTF-8" http-equiv="content-type"&gt;
+        &lt;script type="text/javascript"&gt;
+            window.addEventListener('load', function() {
+                function handler(event) {
+                    document.getElementById('console').innerHTML += 
+                        '&lt;br&gt;&lt;b&gt;currentTarget.id:&lt;/b&gt; ' 
+                            + event.currentTarget.id + 
+                        ', &lt;b&gt;target.id:&lt;/b&gt; ' + event.target.id;
+                    event.stopPropagation();
+                }
+
+                document.getElementById('bodyId')
+                    .addEventListener('click', handler, false);
+                document.getElementById('divId')
+                    .addEventListener('click', handler, false);
+                document.getElementById('btnId')
+                    .addEventListener('click', handler, false);
+            }, false);
+        &lt;/script&gt;
+    &lt;/head&gt;
+    &lt;body id="bodyId"&gt;
+        &lt;div id="divId"&gt;&lt;button id="btnId"&gt;Click me&lt;/button&gt;&lt;/div&gt;
+        &lt;span id="console"&gt;&lt;/span&gt;
+    &lt;/body&gt;
+&lt;/html&gt;</pre>
+      <br>
+      The <span class="courier">removeEventListener</span> function can remove an event handler. The first parameter accepts an event type; the second one accepts the event handler; the third one point out the handler is for the capturing phase (<span
+        class="courier">true</span>) or bubbling phase (<span class="courier">false</span>).<br>
+      <br>
+      <p></p>
+      <p></p>
+      <ul>
+      </ul>
+    </div>
+    <div class="aside">
+      
+       <br>
+      <br>
+      
+       <br>
+      <br>
+      
+       <br>
+      <br>
+      <br>
+    </div>
+      </body>
+</html>

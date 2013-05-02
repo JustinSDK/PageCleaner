@@ -1,0 +1,130 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html dir="ltr" lang="en">
+  <head>
+    <title>Element Dimensions</title>
+    <meta content="caterpillar" name="author">
+    <meta content="JavaScript" name="keywords">
+    <link href="css/std.css" rel="stylesheet" type="text/css">
+    <meta content="text/html; charset=UTF-8" http-equiv="content-type">
+  </head>
+  <body>
+    <div class="header">
+      <div class="hgroup">
+        <h3><a href="http://openhome.cc/eGossip/">From eGossip@Openhome</a></h3>
+        <h1><a href="index.html">JavaScript Essence: Element Dimensions<br>
+          </a></h1>
+      </div>
+    </div>
+    <div class="article">
+      <div style="text-align: right;"><a href="../../Gossip/JavaScript/WidthHeight.html">中文</a></div>
+      <br>
+      You can define an element's <span class="courier">width</span> and <span
+        class="courier">height</span> through stylesheets, the <span class="courier">style</span> attribute, or the <span
+        class="courier">style</span> property prescribed via JavaScript; but should be careful about what the <span
+        class="courier">width</span> and <span class="courier">height</span> means actually. The definition of an element's <span
+        class="courier">width</span> and <span class="courier">height</span> depends on which box model the browser takes. A box model views an element as a box which contains four parts. <br>
+      <img alt="Box mode" src="images/ElementDimensions-1.png"><br>
+      <br>
+      The content part is used to place the element's real content, such as a text, an image or child elements. Every element has a border. The padding part means the distance between the content and border. The margin part means the distance from this element's border to the other element's border. The content has a <span>width</span> and height. The top, right, bottom, and left padding can be changed independently. The border has a width. The top, right, bottom, and left margin can be changed independently, too. <br>
+      <br>
+      If the browser adopts the standard CSS Box Model, the specified <span
+        class="courier">width</span> and <span class="courier">height</span> of an element means the width and height of the content part. <br>
+      <img alt="CSS Box Model" src="images/ElementDimensions-2.png"><br>
+      <br>
+      Standards-compliant browsers adopt the CSS Box Model. For example: <br>
+      <ul>
+        <li><a href="samples/ElementDimensions-1.html">ElementDimensions-1.html</a></li>
+      </ul>
+      <pre>&lt;html&gt;
+    &lt;head&gt;
+        &lt;meta content="text/html; charset=UTF-8" http-equiv="content-type"&gt;
+        &lt;style type="text/css"&gt;
+            img {
+                color: #ffffff;
+                background-color: #ff0000;
+                border-width: 10px;
+                border-color: black;
+                border-style: solid;
+                width: 100px;
+                height: 82px;                
+                padding: 50px;
+                margin: 10px;
+            }
+            div {
+                color: #ffffff;
+                background-color: #ff0000;
+                border-width: 10px;
+                border-color: black;
+                border-style: solid;
+                text-align: center;
+                width: 100px;
+                height: 82px;
+                padding: 50px;
+                margin: 10px;
+            }            
+        &lt;/style&gt;
+    &lt;/head&gt;
+    &lt;body&gt;
+        &lt;img src="../images/caterpillar_small.jpg"&gt;
+        &lt;div&gt;Content here&lt;/div&gt;
+    &lt;/body&gt;
+&lt;/html&gt;
+</pre><br>
+      The image in the above page fills the content part with <span class="courier">width</span> and <span
+        class="courier">height</span> 100 x 82. The element has a <span
+        class="courier">padding</span> 50px and <span class="courier">border-width</span> 10px, so the total visible area of the element is 220 x 201. That is (100 + 50 * 2 +10 * 2) x (82 + 50 * 2 +10 * 2). The <span
+        class="courier">div</span> element is used for comparison. It has the content part with the same <span
+        class="courier">width</span> and <span class="courier">height</span>, and the same <span
+        class="courier">padding</span> and <span class="courier">border-width</span>. <br>
+      <img alt="CSS Box Model" src="images/ElementDimensions-3.png"><br>
+      <br>
+      The above figure, however, is displayed and captured using Firefox. Internet Explorer will render a different result. This is because that, Internet Explorer takes the default compatibility mode, sometimes called "quirks mode", for the above page. In quirks mode, basically, an element's width and height contains the content, padding, and border. <br>
+      <img alt="Quirks mode" src="images/ElementDimensions-4.png"><br>
+      <br>
+      The right part of the following image shows the result viewed in Internet Explorer (The left part is viewed in Firefox).<br>
+      <br>
+      <img alt="Quirks mode" src="images/ElementDimensions-5.png">&nbsp;<br>
+      <br>
+      Since the image size has the same width and height, the image display hides the padding. As for the text in the <span
+        class="courier">div</span> section, it appears vertically because of being compressed. (Try to set the CSS <span
+        class="courier">overflow</span> attribute <span class="courier">auto</span> or <span
+        class="courier">scroll</span>. What will you see?) <br>
+      <br>
+      The quirks mode is called quirks because it has many quirky adjustments. For example, in order to show the image and text, the quirks mode adjusts the content size automatically. In Internet Explorer 8 Developer Tools, you'll even see the wired information about the image element's dimension as follow:<br>
+      <img alt="Quirks mode" src="images/ElementDimensions-6.png"><br>
+      <br>
+      To avoid entering the quirks mode in Internet Explorer, you should provide the proper <span
+        class="courier">&lt;!DOCTYPE&gt;</span>. In Internet Explorer 8, you should provide the following: <br>
+      <div class="courier" style="margin-left: 40px;"><span><strong>&lt;!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Strict//EN"&gt;</strong></span></div>
+      <br>
+      Insert the above to the first line of the sample page, Internet Explorer will adopt the standard CSS Box Model. You'll see the same result as in Firefox. <br>
+      <br>
+      Every element has an <span class="courier">offsetWidth</span> and <span
+        class="courier">offsetHeight</span> property. These two properties are read-only, used to retrieve the width and height of an element. In the standard CSS Box Model, they will return the sum of the border, padding, and content. <br>
+      <img alt="Box Model" src="images/ElementDimensions-7.png"><br>
+      <br>
+      In quirks mode, they'll return the width and height of the content part.<br>
+      <img alt="Quirks mode" src="images/ElementDimensions-8.png"><br>
+      <br>
+      To avoid entering the quirks mode, it's highly recommended to set the proper <span
+        class="courier">&lt;!DOCTYPE&gt;</span> to make sure the browser adopting the standard CSS Box Model.<br>
+      <br>
+      <p></p>
+      <p></p>
+      <ul>
+      </ul>
+    </div>
+    <div class="aside">
+      
+       <br>
+      <br>
+      
+       <br>
+      <br>
+      
+       <br>
+      <br>
+      <br>
+    </div>
+      </body>
+</html>

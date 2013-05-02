@@ -1,0 +1,342 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html dir="ltr" lang="en">
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <title>Object Inspections</title>
+    <meta content="caterpillar" name="author">
+    <meta content="JavaScript Object Inspections" name="keywords">
+    <link href="css/std.css" rel="stylesheet" type="text/css">
+  </head>
+  <body>
+    <div class="header">
+      <div class="hgroup">
+        <h3><a href="http://openhome.cc/eGossip/">From eGossip@Openhome</a></h3>
+        <h1><a href="index.html">JavaScript Essence: Object Inspections<br>
+          </a></h1>
+      </div>
+    </div>
+    <div class="article">
+      <div align="right"><a href="../../Gossip/JavaScript/InspectObject.html">中文</a><br>
+        <br>
+      </div>
+      It's seldom to check the object type. JavaScript is a dynamically typed language so what you have to know are the object features, not the object type. It's enough to do feature detection in most situations. For example:<br>
+      <blockquote><strong><span class="courier">if(obj.someProperty) { </span><br>
+          <span class="courier">&nbsp;&nbsp;&nbsp; // do something...</span><br>
+          <span class="courier">}</span><br>
+        </strong></blockquote>
+      If a property doesn't exist, <span class="courier">undefined</span> is returned and treated as false. If it exists, the object is returned and treated as true. These are the basic rules of feature detection. <br>
+      <br>
+      If you really want to confirm the object type, there're many ways. But basically, the provided information is either insufficient or suspected. <br>
+      <br>
+      Take <span class="courier">typeof</span> for example, the return value is a string. It returns <span
+        class="courier">'number'</span> for a primitive number, <span class="courier">'string'</span> for a string value, <span
+        class="courier">'boolean'</span> for a boolean value, <span class="courier">'function'</span> for a <span
+        class="courier">Function</span> instance, <span class="courier">'undefined'</span> for <span
+        class="courier">undefined</span>, and <span class="courier">'object'</span> for all other objects, including <span
+        class="courier">null</span> (Supervise XD). Basically, you cannot determine what type an object is if it's not a <span
+        class="courier">Function</span> instance. <br>
+      <br>
+      You can know the constructor function of an object from the <span
+        class="courier">constructor</span> property. It's mentioned in <a
+        href="PrototypeChains.html">Prototype Chains</a> that the prototype object of any function has a <span
+        class="courier">constructor</span> property which refers to the function itself. This is a way to check the object type. However, the <span
+        class="courier">constructor</span> property is updatable. Maybe no one will update the <span
+        class="courier">constructor</span> property, but in the situation of prototype chains: <br>
+      <table class="cmd">
+        <tbody>
+          <tr>
+            <td><strong>js&gt; function Person() {}<br>
+                js&gt; function Car() {}<br>
+                js&gt; Car.prototype.wheels = 4;</strong><br>
+              4<strong><br>
+                js&gt; function SportsCar() {}<br>
+                js&gt; SportsCar.prototype = new Car();</strong><br>
+              [object Object]<br>
+              <strong>js&gt; SportsCar.prototype.doors = 2;</strong><br>
+              2<br>
+              <strong>js&gt; var sportsCar = new SportsCar();<br>
+                js&gt; sportsCar.doors;</strong><br>
+              2<br>
+              <strong>js&gt; sportsCar.wheels;</strong><br>
+              4<br>
+              <strong>js&gt; sportsCar.constructor;</strong><br>
+              function Car() {<br>
+              }<br>
+              <br>
+              <strong>js&gt;</strong><br>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <br>
+      The above example uses prototype chains to implement a so-called inheritance. If JavaScript doesn't find the <span
+        class="courier">wheels</span> property on the <span class="courier">sportsCar</span> itself, it will search the prototype object of <span
+        class="courier">sportsCar</span>. That is <span class="courier">SportsCar.prototype</span>. <span
+        class="courier">SportsCar.prototype</span> refers to the <span
+        class="courier">Car</span> instance but it also has no the <span
+        class="courier">wheels </span>property. JavaScript will search the prototype object of the <span
+        class="courier">Car</span> instance. That is the object referred by <span
+        class="courier">Car.prototype</span> and it's found there. <br>
+      <br>
+      In the above example, however, if you want to search the <span class="courier">constructor</span> property of the <span
+        class="courier">SportsCar</span> instance, JavaScript will find <span
+        class="courier">Car.prototype.constructor</span> according the same mechanism. The code should fill a line as follows:<br>
+      <blockquote><strong><span class="courier">SportsCar.prototype.constructor = SportsCar;</span></strong><br>
+      </blockquote>
+      If you miss this line, the <span class="courier">constructor</span> property of the <span
+        class="courier">SportsCar</span> instance is not correct. <br>
+      <br>
+      I've talked about the <span class="courier">new</span> operator in <a
+        href="PrototypeChains.html">Prototype Chains</a>. When you use the <span
+        class="courier">new</span> operator, JavaScript creates a plain object, sets the <span
+        class="courier">prototype</span> property of the constructor function as the prototype object of it, calls the constructor function and then sets <span
+        class="courier">this</span> to refer the plain object. <br>
+      <br>
+      But be careful! The prototype object of an instance is set when the instance is created. When JavaScript is looking up a prototype chain, what it really searches is the prototype object, not the <span
+        class="courier">prototype</span> property of the constructor function. Think about the following example. Why cannot you find the property? <br>
+      <table class="cmd">
+        <tbody>
+          <tr>
+            <td><strong>js&gt; function Car() {<br>
+                &nbsp; &gt;&nbsp;&nbsp;&nbsp;&nbsp; Car.prototype.wheels = 4;<br>
+                &nbsp; &gt; }<br>
+                js&gt; function SportsCar() {<br>
+                &nbsp; &gt;&nbsp;&nbsp;&nbsp;&nbsp; SportsCar.prototype = new Car();<br>
+                &nbsp; &gt;&nbsp;&nbsp;&nbsp;&nbsp; SportsCar.prototype.doors = 2;js<br>
+                &nbsp; &gt; }<br>
+                js&gt; var o = { x : 10 };<br>
+                js&gt; o.propertyIsEnumerable('x');<br>
+                true<br>
+                js&gt; o.propertyIsEnumerable('toString');<br>
+                false<br>
+                js&gt; o.propertyIsEnumerable('xyz');<br>
+              </strong>false<strong><br>
+                js&gt; var sportsCar = new SportsCar();<br>
+                js&gt; print(sportsCar.doors);<br>
+              </strong>undefined<strong><br>
+                js&gt; print(sportsCar.wheels);<br>
+              </strong>undefined<strong><br>
+                js&gt;</strong><br>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <br>
+      This is a common mistake made by beginners. Remind again! The prototype object of an instance is set when the instance is created. In the following code: <br>
+      <blockquote><strong><span class="courier"> var sportsCar = new SportsCar();</span></strong><br>
+      </blockquote>
+      The <span class="courier">sportsCar</span> is specified a prototype object. That is the object referred by <span
+        class="courier">SportsCar.prototype</span> right now. By default, it's an <span
+        class="courier">Object</span> instance with a <span class="courier">constructor</span> property. After that, changing the reference of <span
+        class="courier">SportsCar.prototype</span> to a <span class="courier">Car</span> instance will not affect the prototype object of <span
+        class="courier">sportsCar</span>. The prototype object of <span
+        class="courier">sportsCar</span> is still the original <span class="courier">Object</span> instance, not the later <span
+        class="courier">Car</span> instance. It comes natural that you cannot find the <span
+        class="courier">doors</span> property, not to mention the <span
+        class="courier">wheels</span> property. <br>
+      <br>
+      A real code will reveal the concept. I use the non-standard <span
+        class="courier">__proto__</span> this time. <br>
+      <table class="cmd">
+        <tbody>
+          <tr>
+            <td><strong>js&gt; function Car() {<br>
+                &nbsp; &gt;&nbsp;&nbsp;&nbsp;&nbsp; Car.prototype.wheels = 4;<br>
+                &nbsp; &gt; }<br>
+                js&gt; function SportsCar() {<br>
+                &nbsp; &gt;&nbsp;&nbsp;&nbsp;&nbsp; SportsCar.prototype = new Car();<br>
+                &nbsp; &gt;&nbsp;&nbsp;&nbsp;&nbsp; SportsCar.prototype.doors = 2;<br>
+                &nbsp; &gt; }<br>
+                js&gt; var p = SportsCar.prototype;<br>
+                js&gt; var sportsCar = new SportsCar();<br>
+                js&gt; p == sportsCar.__proto__;<br>
+              </strong>true<strong><br>
+                js&gt; sportsCar.__proto__ == SportsCar.prototype;<br>
+              </strong>false<strong><br>
+                js&gt;</strong><br>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <br>
+      You can see in the above example. The prototype object is set when you create an instance. In the final equality comparison, the prototype object of the instance is not the same as the object referred by <span
+        class="courier">SportsCar.prototype</span>. When you use the <span
+        class="courier">new</span> operator to create an object, such as: <br>
+      <blockquote><strong><span class="courier"> var some = new Some();</span></strong><br>
+      </blockquote>
+      You can imagine JavaScript is doing something as follows:<br>
+      <blockquote><strong><span class="courier">var some = {};</span><br>
+          <span class="courier">some.__proto__ = Some.prototype;</span><br>
+          <span class="courier">Some.call(some);</span><br>
+        </strong></blockquote>
+      In fact, the <span class="courier">instanceof</span> operator also uses the prototype object of an instance to determine <span
+        class="courier">true</span> or <span class="courier">false</span>. For example: <br>
+      <table class="cmd">
+        <tbody>
+          <tr>
+            <td><strong>js&gt; function Car() {}<br>
+                js&gt; function SportsCar() {}<br>
+                js&gt; SportsCar.prototype = new Car();<br>
+              </strong>[object Object]<strong><br>
+                js&gt; var sportsCar = new SportsCar();<br>
+                js&gt; sportsCar instanceof SportsCar;<br>
+              </strong>true<strong><br>
+                js&gt; sportsCar instanceof Car;<br>
+              </strong>true<strong><br>
+                js&gt; sportsCar instanceof Object;<br>
+              </strong>true<strong><br>
+                js&gt;</strong><br>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <br>
+      Simply put, <span class="courier">instanceof</span> is based on the prototype chain. After understand this mechanism, the following code deceives <span
+        class="courier">instanceof</span> with non-standard <span class="courier">__proto__</span> property:<br>
+      <table class="cmd">
+        <tbody>
+          <tr>
+            <td><strong>js&gt; var o = {};<br>
+                js&gt; o instanceof Array;<br>
+              </strong>false<strong><br>
+                js&gt; o.__proto__ = Array.prototype;<br>
+                js&gt; o instanceof Array;<br>
+              </strong>true<strong><br>
+                js&gt;</strong><br>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <br>
+      In the above code, the object is definitively not an <span class="courier">Array</span> instance but it still deceives <span
+        class="courier">instanceof</span> into returning a <span class="courier">true</span> value. <br>
+      <br>
+      Perhaps the prototype object is a way to inspect an instance, but <span
+        class="courier">__proto__</span> is not a standard property. If you want to check the prototype object of an instance, you can use <span
+        class="courier">isPrototypeOf</span> function. In <a href="PrototypeChains.html">Prototype Chains</a>, I've done the following: <br>
+      <table class="cmd">
+        <tbody>
+          <tr>
+            <td><strong>js&gt; var arr = [];<br>
+                js&gt; Array.prototype.isPrototypeOf(arr);<br>
+              </strong>true<strong><br>
+                js&gt; Function.prototype.isPrototypeOf(Array);<br>
+              </strong>true<strong><br>
+                js&gt; Object.prototype.isPrototypeOf(Array.prototype);<br>
+              </strong>true<strong><br>
+                js&gt;</strong><br>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <br>
+      When JavaScript searches an object property, it looks up the prototype chain. If you want to confirm whether a property is own by an instance itself or a property of the prototype object, you can use the <span
+        class="courier">hasOwnProperty</span> function. It's a property of <span
+        class="courier">Object.prototype</span> so can be used through any object. For example:&nbsp;&nbsp; <br>
+      <table class="cmd">
+        <tbody>
+          <tr>
+            <td><strong>js&gt; var arr = [];<br>
+                js&gt; Array.prototype.isPrototypeOf(arr);<br>
+              </strong>true<strong><br>
+                js&gt; Object.prototype.isPrototypeOf(arr);<br>
+              </strong>true<strong><br>
+                js&gt;</strong><br>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <br>
+      If the property doesn't come from the instance itself but the prototype chain, <span
+        class="courier">hasOwnProperty</span> returns <span class="courier">false</span>. If it cannot find the property, it returns <span
+        class="courier">false</span>, too. <br>
+      <br>
+      The <span class="courier">for in</span> syntax can iterate user-defined properties but cannot iterate some built-in properties. If you want to know whether a property can be iterated by <span
+        class="courier">for in</span>, you can use the <span class="courier">propertyIsEnumerable</span> function. For example:&nbsp;&nbsp; <br>
+      <table class="cmd">
+        <tbody>
+          <tr>
+            <td><strong>js&gt; var o = { x : 10 };<br>
+                js&gt; o.hasOwnPrototype('x');<br>
+                js&gt; o.hasOwnProperty('x');<br>
+              </strong>true<strong><br>
+                js&gt; o.hasOwnProperty('toString');<br>
+              </strong>false<strong><br>
+                js&gt; o.hasOwnProperty('xyz');<br>
+              </strong>false<strong><br>
+                js&gt;</strong><br>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <br>
+      Of course, if the property does not exist, it will return <span class="courier">false</span>.<br>
+      <br>
+      The ECMAScript specification says the default implementation of the <span
+        class="courier">toString</span> function, defined on the <span
+        class="courier">Object.prototype</span>, should return a string as follows:<br>
+      <blockquote><strong><span class="courier">'[Object class]'</span></strong><br>
+      </blockquote>
+      Basically, the built-in types of JavaScript all implement this feature. For examples, an <span
+        class="courier">Object</span> instance returns <span class="courier">'[object Object]'</span>, an <span
+        class="courier">Array</span> instance returns <span class="courier">'[object Array]'</span>, a <span
+        class="courier">Function</span> instance returns <span class="courier">'[object Function]'</span>, and so on. This can be a way to check object types. As a support to the standard specification, many libraries also use this feature to check object types. <br>
+      <br>
+      Take care here. In Internet Explorer, <span class="courier">typeof</span> does not return <span
+        class="courier">'function'</span> for the <span class="courier">alert</span>, <span
+        class="courier">confirm</span> and some built-in functions. If you use <span
+        class="courier">instanceof</span> to check these functions, <span
+        class="courier">instanceof</span> also returns <span class="courier">false</span>. The return value of <span
+        class="courier">toString</span> may not be <span class="courier">'[object Function]'</span>, too.<br>
+      <br>
+      <br>
+      <p></p>
+      <p></p>
+      <ul>
+      </ul>
+    </div>
+    <div class="aside">
+      <script type="text/javascript"><!--
+google_ad_client = "pub-9750319131714390";
+google_ad_width = 160;
+google_ad_height = 600;
+google_ad_format = "160x600_as";
+google_ad_type = "text_image";
+google_ad_channel = "";
+//-->
+      </script>
+      <script type="text/javascript" src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+      </script> <br>
+      <br>
+      <script type="text/javascript"><!--
+google_ad_client = "pub-9750319131714390";
+google_ad_width = 160;
+google_ad_height = 600;
+google_ad_format = "160x600_as";
+google_ad_type = "text_image";
+google_ad_channel = "";
+//-->
+      </script>
+      <script type="text/javascript" src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+      </script> <br>
+      <br>
+      <script type="text/javascript"><!--
+google_ad_client = "pub-9750319131714390";
+google_ad_width = 160;
+google_ad_height = 600;
+google_ad_format = "160x600_as";
+google_ad_type = "text_image";
+google_ad_channel = "";
+//-->
+      </script>
+      <script type="text/javascript" src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+      </script> <br>
+      <br>
+      <br>
+    </div>
+    <script src="http://www.google-analytics.com/urchin.js" type="text/javascript">
+</script> <script type="text/javascript">
+_uacct = "UA-143766-1";
+urchinTracker();
+</script> </body>
+</html>

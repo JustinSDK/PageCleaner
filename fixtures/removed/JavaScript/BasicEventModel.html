@@ -1,0 +1,181 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html dir="ltr" lang="en">
+  <head>
+    <title>Basic Event Model</title>
+    <meta content="caterpillar" name="author">
+    <meta content="JavaScript Basic Event Model" name="keywords">
+    <link href="css/std.css" rel="stylesheet" type="text/css">
+    <meta content="text/html; charset=UTF-8" http-equiv="content-type">
+  </head>
+  <body>
+    <div class="header">
+      <div class="hgroup">
+        <h3><a href="http://openhome.cc/eGossip/">From eGossip@Openhome</a></h3>
+        <h1><a href="index.html">JavaScript Essence: Basic Event Model<br>
+          </a></h1>
+      </div>
+    </div>
+    <div class="article">
+      <div style="text-align: right;"><a href="../../Gossip/JavaScript/BasicEventModel.html">中文</a></div>
+      <br>
+      The web application itself is event-driven. It does something at an appropriate time through a user's operation or system event. A "Basic Event Model" exists before the standardization of event. Even not standardized, yet it has better browser compatibility (in contrast to "DOM Level 2 Event Model" or "Internet Explorer Event Model"). So, it's a well-known and the most popular event model. <br>
+      <br>
+      In "Basic event model", you have to specify the event property a function called when the event happens. For example, registering the <span
+        class="courier">load</span> event of <span class="courier">window</span> allows us to do something when all page resources are loaded. What you have to do is specify the <span
+        class="courier">window.onload</span> event a function. You have seen that in several examples: <br>
+      <div class="courier" style="margin-left: 40px;"><span><strong>window.onload = function() {</strong></span><span><strong></strong></span><span><br>
+        </span><span><strong></strong></span><span><strong>&nbsp;&nbsp;&nbsp; // do something what the onload event is triggered.</strong></span><span><strong></strong></span><span><br>
+        </span><span><strong></strong></span><span><strong>};</strong></span></div>
+      <br>
+      For example, specifying the <span class="courier">onclick</span> event allows us to do something when a button is clicked. <br>
+      <ul>
+        <li><a href="samples/BasicEventModel-1.html">BasicEventModel-1.html</a></li>
+      </ul>
+      <pre>&lt;html&gt;
+    &lt;head&gt;
+        &lt;meta content="text/html; charset=UTF-8" http-equiv="content-type"&gt;
+        &lt;script type="text/javascript"&gt;
+            window.onload = function() {
+                function handler() {
+                    document.getElementById('console').innerHTML 
+                         = 'Who\'s clicked: ' + this.id;
+                }
+                document.getElementById('btn1').onclick = handler;
+                document.getElementById('btn2').onclick = handler;
+            };
+        &lt;/script&gt;
+    &lt;/head&gt;
+    &lt;body&gt;
+        &lt;button id="btn1"&gt;Button 1&lt;/button&gt;&lt;br&gt;
+        &lt;button id="btn2"&gt;Button 2&lt;/button&gt;&lt;br&gt;
+        &lt;div id="console"&gt;&lt;/div&gt;
+    &lt;/body&gt;
+&lt;/html&gt;</pre>
+      <br>
+      In the above example, the <span class="courier">handler</span> function registers the <span
+        class="courier">click</span> event of the <span class="courier">button</span> elements. When an event is triggered on an element and the callback function is called, <span
+        class="courier">this</span> will refer to that element. In this example, when you click a button and <span
+        class="courier">handler</span> is called, <span class="courier">this</span> will refer to that <span
+        class="courier">button</span> element. This way is called "Traditional Model" or "Traditional Registration Model".<br>
+      <br>
+      The other way is not recommended now, but commonly seen in the past pages. That is writing JavaScript directly in the markup. It's called "Inline Model" or "Inline Registration Model". For example:<br>
+      <ul>
+        <li><a href="samples/BasicEventModel-2.html"> BasicEventModel-2.html</a></li>
+      </ul>
+      <pre>&lt;html&gt;
+    &lt;head&gt;
+        &lt;meta content="text/html; charset=UTF-8" http-equiv="content-type"&gt;
+        &lt;script type="text/javascript"&gt;
+            function handle(element) {
+                document.getElementById('console').innerHTML 
+                     = 'Who\'s clicked: ' + element.id;
+            }
+        &lt;/script&gt;
+    &lt;/head&gt;
+    &lt;body&gt;
+        &lt;button id="btn1" onclick="handle(this);"&gt;Button 1&lt;/button&gt;&lt;br&gt;
+        &lt;button id="btn2" onclick="handle(this);"&gt;Button 2&lt;/button&gt;&lt;br&gt;
+        &lt;div id="console"&gt;&lt;/div&gt;
+    &lt;/body&gt;
+&lt;/html&gt;</pre>
+      <br>
+      Although only a short code in the markup, JavaScript still invades this web page. It's not recommended right now. The above example doesn't directly specify the <span
+        class="courier">click</span> event a function. In fact, placing JavaScript inline together with an HTML markup will create an anonymous function automatically. That is, the above example is like the following code: <br>
+      <div class="courier" style="margin-left: 40px;"> <span><strong>document.getElementById('btn1').onclick = function() {</strong></span><span><strong><br>
+          </strong></span><span><strong>&nbsp;&nbsp;&nbsp; handle(this);</strong></span><span><strong><br>
+          </strong></span><span><strong>};</strong></span><strong><br>
+        </strong></div>
+      <br>
+      The specified JavaScript will be the body of the anonymous function. This also proves the concept that <span
+        class="courier">this</span> in the <span class="courier">onclick</span> attribute actually represents the <span
+        class="courier">button</span> element. <br>
+      <br>
+      Several events have default actions. For example, the <span class="courier">submit</span> event of the <span
+        class="courier">form</span> element is submitting the form by default; the default behavior of the <span
+        class="courier">click</span> event for a hyberlink is loading the linked page. In the "Basic Event Model", returning <span
+        class="courier">false</span> from the event handler will cancel the default behavior. For example:&nbsp; <br>
+      <ul>
+        <li><a href="samples/BasicEventModel-3.html"> BasicEventModel-3.html</a></li>
+      </ul>
+      <pre>&lt;html&gt;
+    &lt;head&gt;
+        &lt;meta content="text/html; charset=UTF-8" http-equiv="content-type"&gt;
+        &lt;script type="text/javascript"&gt;
+            window.onload = function() {
+                document.form1.onsubmit = function() {
+                    if(this.data.value.length === 0) {
+                        return false;
+                    }
+                };
+            };
+        &lt;/script&gt;
+    &lt;/head&gt;
+    &lt;body&gt;
+        &lt;form name="form1" action="fake.do"&gt;
+            Input data: &lt;input name="data"&gt;&lt;br&gt;
+            &lt;button type="submit"&gt;Submit&lt;/button&gt;
+        &lt;/form&gt;
+    &lt;/body&gt;
+&lt;/html&gt;</pre>
+      <br>
+      In the above example, clicking on the button triggers the <span class="courier">submit</span> event of the <span
+        class="courier">form</span> element. The callback function checks if there's a value in the input box and returns <span
+        class="courier">false</span> when the input box is empty. This will cancel the submission and is the basic way to do form validation. If you want to do this by "Inline Model ", as follows: <br>
+      <ul>
+        <li><a href="samples/BasicEventModel-4.html"> BasicEventModel-4.html</a></li>
+      </ul>
+      <pre>&lt;html&gt;
+    &lt;head&gt;
+        &lt;meta content="text/html; charset=UTF-8" http-equiv="content-type"&gt;
+        &lt;script type="text/javascript"&gt;
+            function validate(form) {
+                if(form.data.value.length === 0) {
+                    return false;
+                }
+                return true;
+            }
+        &lt;/script&gt;
+    &lt;/head&gt;
+    &lt;body&gt;
+        &lt;form name="form1" action="fake.do" 
+              onsubmit="return validate(this);"&gt;
+            Input data: &lt;input name="data"&gt;&lt;br&gt;
+            &lt;button type="submit"&gt;Submit&lt;/button&gt;
+        &lt;/form&gt;
+    &lt;/body&gt;
+&lt;/html&gt;</pre>
+      <br>
+      If you want to prompt users when they leave a page, using "Inline Model" will be as follow: <br>
+      <div class="courier" style="margin-left: 40px;"><span><strong> &lt;a href="http://openhome.cc" <br>
+            &nbsp;&nbsp; onclick="return confirm('Say goodbye?');"&gt;Openhome.cc&lt;/a&gt;</strong></span></div>
+      <br>
+      Not only a user operation but also calling a specific function can trigger an event. For example, calling the <span
+        class="courier">submit</span> function of the <span class="courier">form</span> element can trigger its <span
+        class="courier">submit</span> event. If you want to focus on the first input box when the page is loaded, you can call the <span
+        class="courier">focus</span> function of the <span class="courier">input</span> element. For example, if there's an <span
+        class="courier">input</span> element with an&nbsp;<span class="courier"></span><span
+        class="courier">'user'</span> <span class="courier">id</span>, focusing on it when the page is loaded can be done as follow: <br>
+      <div class="courier" style="margin-left: 40px;"><span><strong>window.onload = function() {</strong></span><span><strong></strong></span><span><br>
+        </span><span><strong></strong></span><span><strong>&nbsp;&nbsp;&nbsp; document.getElementById('test').focus();</strong></span><span><strong></strong></span><span><br>
+        </span><span><strong></strong></span><span><strong>};</strong></span></div>
+      <br>
+      <br>
+      <p></p>
+      <p></p>
+      <ul>
+      </ul>
+    </div>
+    <div class="aside">
+      
+       <br>
+      <br>
+      
+       <br>
+      <br>
+      
+       <br>
+      <br>
+      <br>
+    </div>
+      </body>
+</html>

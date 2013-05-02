@@ -1,0 +1,181 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html dir="ltr" lang="en">
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <title>Namespaces</title>
+    <meta content="caterpillar" name="author">
+    <meta content="JavaScript namespaces" name="keywords">
+    <link href="css/std.css" rel="stylesheet" type="text/css">
+  </head>
+  <body>
+    <div class="header">
+      <div class="hgroup">
+        <h3><a href="http://openhome.cc/eGossip/">From eGossip@Openhome</a></h3>
+        <h1><a href="index.html">JavaScript Essence: Namespaces<br>
+          </a></h1>
+      </div>
+    </div>
+    <div class="article">
+      <div align="right"><a href="../../Gossip/JavaScript/Namespace.html">中文</a><br>
+      </div>
+      <br>
+      JavaScript doesn't provide built-in support for namespaces. Every variable is an object property. A global variable is the property of the global object; a variable declared by <span
+        class="courier">var</span> is the property of the call object. <br>
+      <br>
+      Name conflicts arise easily in JavaScript; even in the same js file. For example, one day you wrote a <span
+        class="courier">validate</span> function; someday one takes over your code and write another <span
+        class="courier">validate</span> function somewhere in the same file. <br>
+      <blockquote><strong><span class="courier">function validate() {</span><br>
+          <span class="courier">&nbsp;&nbsp;&nbsp; // .. do some validation</span><br>
+          <span class="courier">}</span><br>
+          <span class="courier">// a long..long program</span><br>
+          <span class="courier">// someday...someone</span><br>
+          <span class="courier">function validate() {</span><br>
+          <span class="courier">&nbsp;&nbsp;&nbsp; // .. do another validation</span><br>
+          <span class="courier">}</span><br>
+        </strong></blockquote>
+      Unfortunately, the later <span class="courier">validate</span> function overwrites the previous one. This may cause original features to fail. <br>
+      <br>
+      One of the JavaScript namespace strategies, basically, lets the function be the property of an object. Generally, a meaningful name for organization or a department is used to refer to that object. For example: <br>
+      <blockquote><strong><span class="courier">var openhome = {};&nbsp; // creat a unique namespace</span><br>
+          <span class="courier">function validate() {</span><br>
+          <span class="courier">&nbsp;&nbsp;&nbsp; // .. do some validation</span><br>
+          <span class="courier">}</span><br>
+          <span class="courier">openhome.validate = validate;</span><br>
+        </strong></blockquote>
+      To call the <span class="courier">validate</span> function, you can do as follow:&nbsp; <br>
+      <blockquote><strong><span class="courier">openhome.validate();</span></strong><br>
+      </blockquote>
+      Others may give similar consideration when defining functions. For example, one may define as follows in the same js file.<br>
+      <blockquote><strong><span class="courier">var caterpillar = {}; // create a unique namespace</span><br>
+          <span class="courier">function validate() {</span><br>
+          <span class="courier">&nbsp;&nbsp;&nbsp; // .. do some validation</span><br>
+          <span class="courier">}</span><br>
+          <span class="courier">caterpillar.validate = validate;</span></strong><br>
+      </blockquote>
+      To invoke it, as follows: <br>
+      <blockquote><strong><span class="courier">caterpillar.validate();</span></strong><br>
+      </blockquote>
+      This way avoids the variable overriding problem. Perhaps the above name conflicts are rare in one js file, this generally happens when two js files come from different origination or programmers.<br>
+      <br>
+      People from the same organization may use the same name as a namespace. If you write the following in a.js: <br>
+      <blockquote><strong><span class="courier">var openhome = {}; // create a namespace</span><br>
+          <span class="courier">function validate() {</span><br>
+          <span class="courier">&nbsp;&nbsp;&nbsp; // .. do some validation</span><br>
+          <span class="courier">}</span><br>
+          <span class="courier">openhome.validate = validate;</span><br>
+        </strong></blockquote>
+      Another writes the following b.js:<br>
+      <blockquote><strong><span class="courier">var openhome = {}; // create a namespace</span><br>
+          <span class="courier">function format() {</span><br>
+          <span class="courier">&nbsp;&nbsp;&nbsp; // .. do some formatting</span><br>
+          <span class="courier">}</span><br>
+          <span class="courier">openhome.format = format;</span></strong><br>
+      </blockquote>
+      What happens if one page includes both a.js and b.js? If b.js is included later, <span
+        class="courier">openhome.validate</span> is not available. When creating a namespace, you can test the existence of the namespace object; if there's one, use it directly; if not, create a new object as the namespace. For example, a.js may be revised as follows: <br>
+      <blockquote><strong><span class="courier">var openhome = openhome || {};</span><br>
+          <span class="courier">function validate() {</span><br>
+          <span class="courier">&nbsp;&nbsp;&nbsp; // .. do some validation</span><br>
+          <span class="courier">}</span><br>
+          <span class="courier">openhome.validate = validate;</span><br>
+        </strong></blockquote>
+      Such way; a new object is created only if <span class="courier">openhome</span> is <span
+        class="courier">undefined</span>. The b.js may be revised in a similar way to avoid the above name conflict. <br>
+      <br>
+      Avoid using global variables when writing JavaScript. Does the above example have the problem? Yes! There're two global names in the a.js; one is <span
+        class="courier">openhome </span>and the other is <span class="courier">validate</span>. Remember! When defining a function in the global scope, the function name is a property of the global object. You can revise the code as follows: <br>
+      <blockquote><strong><span class="courier">var openhome = openhome || {};</span><br>
+          <span class="courier">openhome.validate = function() {</span><br>
+          <span class="courier">&nbsp;&nbsp;&nbsp; // do some validation</span><br>
+          <span class="courier">};</span><br>
+        </strong></blockquote>
+      But, it's not convenient if this function can also be a property of another object. There's a beautiful way to solve this problem. For example:&nbsp; <br>
+      <blockquote><strong><span class="courier">var openhome = openhome || {};</span><br>
+          <span class="courier">(function() {</span><br>
+          <span class="courier">&nbsp;&nbsp;&nbsp; function validate() {</span><br>
+          <span class="courier">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // do some validation</span><br>
+          <span class="courier">&nbsp;&nbsp;&nbsp; }</span><br>
+          <span class="courier">&nbsp;&nbsp;&nbsp; openhome.validate = validate;</span><br>
+          <span class="courier">&nbsp;&nbsp;&nbsp; // ... other code ...</span><br>
+          <span class="courier">})();</span></strong><br>
+      </blockquote>
+      It seems complex at first glance. We can look at it step by step. First, we write...<br>
+      <blockquote><strong><span class="courier">function() {</span><br>
+          <span class="courier">}</span><br>
+        </strong></blockquote>
+      This is a function literal and no variable refers to it, so there's nothing stepping into the global namespace. Then ...<br>
+      <blockquote><strong><span class="courier">(function() {</span></strong><br>
+        <strong><span class="courier">})</span></strong><br>
+      </blockquote>
+      Parentheses define the order of operations and evaluate the function literal as a function instance. Then...<br>
+      <blockquote><strong><span class="courier">(function() {</span></strong><br>
+        <strong><span class="courier">})();</span></strong><br>
+      </blockquote>
+      The final parentheses indicate calling the evaluated function. You can create local functions in the function literal. <br>
+      <blockquote><strong><span class="courier">var openhome = openhome || {};</span><br>
+          <span class="courier">(function() {</span><br>
+          <span class="courier">&nbsp;&nbsp;&nbsp; function validate() { // validate is local</span><br>
+          <span class="courier">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // do some validation</span><br>
+          <span class="courier">&nbsp;&nbsp;&nbsp; }</span><br>
+          <span class="courier">&nbsp;&nbsp;&nbsp; openhome.validate = validate;</span><br>
+          <span class="courier">&nbsp;&nbsp;&nbsp; // ... other code ...</span><br>
+          <span class="courier">})();</span><br>
+        </strong></blockquote>
+      The <span class="courier">validate</span> function doesn't invade the global namespace because it's local. Finally, only the name <span
+        class="courier">openhome</span> exists in the global scope. Patterns like this are broadly used in the world of JavaScript; generally used in a js file for module initialization.<br>
+      <br>
+      When designing a library, there's one convention if you want to avoid name conflicts from others. For example, if you want to prevent one from overwriting your name <span
+        class="courier">global</span>, you can do as follows: <br>
+      <blockquote><strong><span class="courier">(function(global) {</span><br>
+          <span class="courier">&nbsp;&nbsp; var global.openhome = global.openhome || {};</span><br>
+          <span class="courier">&nbsp;&nbsp;&nbsp; ...</span><br>
+          <br>
+          <span class="courier">})(this);</span><br>
+        </strong></blockquote>
+      Maybe that is because you're not sure where your anonymous function will be initialized; you want to use the name <span
+        class="courier">global</span> but are afraid of being occupied by someone else. If you use the above way in a browser, the real object referred by <span
+        class="courier">this</span> will be passed to the parameter <span
+        class="courier">global</span>. The parameter <span class="courier">global</span> is a local variable so this way avoids name conflicts from other libraries. <br>
+      <br>
+      Even file names suffer from name conflicts. A file name may have an organization-related prefix, such as "openhome.formutil.js", "caterpillar.formutil.js" and so on, to avoid file name conflicts. <br>
+      <br>
+      Deep namespace hierarchies may also be a problem. For example: <br>
+      <blockquote><strong><span class="courier">openhome.book.web.some = 'some';</span></strong><br>
+        <strong><span class="courier">openhome.book.web.other = 'other';</span></strong><br>
+        <strong><span class="courier">openhome.book.web.another = 'another';</span></strong><br>
+      </blockquote>
+      Deep namespace hierarchies are not only troublesome but the successive dot operators also have a performance problem. JavaScript has a hard time optimizing successive dot operators. (Statically typed languages, such as Java, can optimize that.) Although you can use <span
+        class="courier">with</span> as follows:&nbsp;&nbsp; <br>
+      <blockquote><strong><span class="courier">with(openhome.book.web) {</span><br>
+          <span class="courier">&nbsp;&nbsp;&nbsp; some = 'some';</span><br>
+          <span class="courier">&nbsp;&nbsp;&nbsp; other = 'other';</span><br>
+          <span class="courier">&nbsp;&nbsp;&nbsp; another = 'another';</span><br>
+          <span class="courier">}</span><br>
+        </strong></blockquote>
+      But it is not recommended; though it eliminates some typing, but with is hard to optimize, and even may be slower. The better way is: <br>
+      <blockquote><strong><span class="courier">var web = openhome.book.web;</span></strong><br>
+        <strong><span class="courier">web.some = 'some';</span></strong><br>
+        <strong><span class="courier">web.other = 'other';</span></strong><br>
+        <strong><span class="courier">web.another = 'another';</span></strong><br>
+      </blockquote>
+      <br>
+      <p></p>
+      <p></p>
+      <ul>
+      </ul>
+    </div>
+    <div class="aside">
+      
+       <br>
+      <br>
+      
+       <br>
+      <br>
+      
+       <br>
+      <br>
+      <br>
+    </div>
+      </body>
+</html>

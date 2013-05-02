@@ -1,0 +1,174 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html dir="ltr" lang="en">
+  <head>
+    <title>Event</title>
+    <meta content="caterpillar" name="author">
+    <meta content="JavaScript event stopPropagation cancelBubble" name="keywords">
+    <link href="css/std.css" rel="stylesheet" type="text/css">
+    <meta content="text/html; charset=UTF-8" http-equiv="content-type">
+  </head>
+  <body>
+    <div class="header">
+      <div class="hgroup">
+        <h3><a href="http://openhome.cc/eGossip/">From eGossip@Openhome</a></h3>
+        <h1><a href="index.html">JavaScript Essence: Event<br>
+          </a></h1>
+      </div>
+    </div>
+    <div class="article">
+      <div style="text-align: right;"><a href="../../Gossip/JavaScript/Event.html">中文</a></div>
+      <br>
+      When an event happens, an <span class="courier">Event</span> instance collects information about the event. Unfortunately, this instance has different behaviors between standard browsers and Internet Explorer. In standard browsers, an <span
+        class="courier">Event</span> instance will be the first argument of the event handler, whereas Internet Explorer uses <span
+        class="courier">window.event</span> to refer it. In order to deal with cross-browser compatibility, the following code is common.<br>
+      <div class="courier" style="margin-left: 40px;"><span><strong>function handler(event) {</strong></span><span><strong></strong></span><span><br>
+        </span><span><strong></strong></span><span><strong>&nbsp;&nbsp;&nbsp; event = event || window.event;</strong></span><span><strong></strong></span><span><br>
+        </span><span><strong></strong></span><span><strong>&nbsp;&nbsp;&nbsp; ...</strong></span><span><strong></strong></span><span><br>
+        </span><span><strong></strong></span><span><strong>}</strong></span></div>
+      <br>
+      If the first parameter is <span class="courier">undefined</span>, the variable <span
+        class="courier">event</span> will refer to <span class="courier">window.event</span>. This difference, however, is not the only one; properties of an <span
+        class="courier">Event</span> instance also have differences. For example, the event target is the <span
+        class="courier">target</span> property of an <span class="courier">Event</span> instance in standard browsers, but is the <span
+        class="courier">srcElement</span> property of an <span class="courier">Event</span> instance in Internet Explorer. <br>
+      <br>
+      Then, what's the event target? If you click on a button, the button is the event target. It's mentioned in <a
+        href="BasicEventModel.html">Basic Event Model</a> that <span class="courier">this</span> in the event handler will refer to the operated element. Well, why do we still need a property to point out the event target? <br>
+      <br>
+      In fact, when an event happens, it'll propagate from the event target to its parents and call their respect event handler if there's one. This can be demonstrated by the following example: <br>
+      <ul>
+        <li><a href="samples/Event-1.html">Event-1.html</a></li>
+      </ul>
+      <pre>&lt;html&gt;
+    &lt;head&gt;
+        &lt;meta content="text/html; charset=UTF-8" http-equiv="content-type"&gt;
+        &lt;script type="text/javascript"&gt;
+            window.onload = function() {
+                function handler(event) {
+                    event = event || window.event;
+                    var target = event.target || event.srcElement;
+                    document.getElementById('console').innerHTML += 
+                        '&lt;br&gt;&lt;b&gt;this.id:&lt;/b&gt; ' + this.id + 
+                        ', &lt;b&gt;target.id:&lt;/b&gt; ' + target.id;
+                }
+                document.getElementById('bodyId').onclick = handler;
+                document.getElementById('divId').onclick = handler;
+                document.getElementById('btnId').onclick = handler;
+            };
+        &lt;/script&gt;
+    &lt;/head&gt;
+    &lt;body id="bodyId"&gt;
+        &lt;div id="divId"&gt;&lt;button id="btnId"&gt;Click me&lt;/button&gt;&lt;/div&gt;
+        &lt;span id="console"&gt;&lt;/span&gt;
+    &lt;/body&gt;
+&lt;/html&gt;</pre>
+      <br>
+      In the above example, using the object detection makes retrieving <span
+        class="courier">Event</span> instances and event targets cross-browser. The <span
+        class="courier">button</span> element is nested in the <span class="courier">div</span> and the <span
+        class="courier">body</span> is the outer element of <span class="courier">div</span>. All of them have respective event handler. If you try to click the button, you will see the following result: <br>
+      <div style="margin-left: 40px;"><strong>this.id: btnId, target.id: btnId</strong><strong><br>
+        </strong><strong>this.id: divId, target.id: btnId</strong><strong><br>
+        </strong><strong>this.id: bodyId, target.id: btnId&nbsp; </strong><strong><br>
+        </strong></div>
+      <br>
+      The invoked functions are not only the event handler of the <span
+        class="courier">button</span>, but also those of the <span class="courier">div</span> and <span
+        class="courier">body</span>. This is so-called <strong>"Event Bubbling"</strong>. When an event propagates, it triggers on parents too. When their respective event handler is called, <span
+        class="courier">this</span> will refer to that parent. You can observe this from the above result. And note that, you click the button, so the event target is the button. You can observer this from <span
+        class="courier">target.id</span>. <br>
+      <br>
+      You can take advantage of the event bubbling. Take <a href="samples/UpdatingDOMTree-1.html">UpdatingDOMTree-1.html</a> in <a
+        href="UpdatingDOMTree.html">Updating the DOM Tree</a> for example, you can set each created <span
+        class="courier">img</span> element a click event handler, so that clicking the <span
+        class="courier">img</span> will remove itself automatically. Nevertheless, if you use the event bubbling, setting the <span
+        class="courier">div</span> element an event handler can archive the same purpose. For example: <br>
+      <ul>
+        <li><a href="samples/Event-2.html">Event-2.html</a></li>
+      </ul>
+      <pre>&lt;html&gt;
+    &lt;head&gt;
+        &lt;meta content="text/html; charset=UTF-8" http-equiv="content-type"&gt;
+        &lt;script type="text/javascript"&gt;
+            window.onload = function() {
+                var images = document.getElementById('images');
+                images.onclick = function(event) {
+                    event = event || window.event;
+                    var target = event.target || event.srcElement;
+                    this.removeChild(target);
+                };
+                
+                document.getElementById('add').onclick = function() {
+                    var img = document.createElement('img');
+                    img.src = document.getElementById('src').value;
+                    images.appendChild(img);
+                };
+            };
+        &lt;/script&gt;
+    &lt;/head&gt;
+    &lt;body&gt;
+        &lt;input id="src" type="text"&gt;&lt;button id="add"&gt;Add&lt;/button&gt;
+        &lt;div id="images"&gt;&lt;/div&gt;
+    &lt;/body&gt;
+&lt;/html&gt;</pre>
+      <br>
+      If you want to stop event propagation, there are also different ways between browsers. In standards-compliant browsers, you should invoke the <span
+        class="courier">stopPropagation</span> function of an <span class="courier">Event</span> instance. In Internet Explorer, you should set its <span
+        class="courier">cancelBubble</span> property <span class="courier">false</span>. For example, stopping the event propagation of the first example can be done as follows: <br>
+      <ul>
+        <li><a href="samples/Event-3.html">Event-3.html</a></li>
+      </ul>
+      <pre>&lt;html&gt;
+    &lt;head&gt;
+        &lt;meta content="text/html; charset=UTF-8" http-equiv="content-type"&gt;
+        &lt;script type="text/javascript"&gt;
+            window.onload = function() {
+                function handler(event) {
+                    event = event || window.event;
+                    var target = event.target || event.srcElement;
+                    document.getElementById('console').innerHTML += 
+                        '&lt;br&gt;&lt;b&gt;this.id:&lt;/b&gt; ' + this.id + 
+                        ', &lt;b&gt;target.id:&lt;/b&gt; ' + target.id;
+                    if(event.stopPropagation) {
+                        event.stopPropagation();
+                    }
+                    else {
+                        event.cancelBubble = true;
+                    }
+                }
+                document.getElementById('bodyId').onclick = handler;
+                document.getElementById('divId').onclick = handler;
+                document.getElementById('btnId').onclick = handler;
+            };
+        &lt;/script&gt;
+    &lt;/head&gt;
+    &lt;body id="bodyId"&gt;
+        &lt;div id="divId"&gt;&lt;button id="btnId"&gt;Click me&lt;/button&gt;&lt;/div&gt;
+        &lt;span id="console"&gt;&lt;/span&gt;
+    &lt;/body&gt;
+&lt;/html&gt;</pre>
+      <br>
+      There're still several cross-browser problems on properties of an <span
+        class="courier">Event</span> instance, will be mentioned afterword. Usually, we'll write a library to encapsulate those differences. Solving cross-browser incompatibilities is one of the main goals for most libraries.<br>
+      <br>
+      <br>
+      <br>
+      <p></p>
+      <p></p>
+      <ul>
+      </ul>
+    </div>
+    <div class="aside">
+      
+       <br>
+      <br>
+      
+       <br>
+      <br>
+      
+       <br>
+      <br>
+      <br>
+    </div>
+      </body>
+</html>

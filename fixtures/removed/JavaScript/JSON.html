@@ -1,0 +1,264 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html dir="ltr" lang="en">
+  <head>
+    <meta content="text/html; charset=UTF-8" http-equiv="content-type">
+    <title>Dealing with JSON</title>
+    <meta content="caterpillar" name="author">
+    <meta content="JavaScript" name="keywords">
+    <link href="css/std.css" rel="stylesheet" type="text/css">
+  </head>
+  <body>
+    <div class="header">
+      <div class="hgroup">
+        <h3><a href="http://openhome.cc/eGossip/">From eGossip@Openhome</a></h3>
+        <h1><a href="index.html">JavaScript Essence: Dealing with JSON<br>
+          </a></h1>
+      </div>
+    </div>
+    <div class="article">
+      <div style="text-align: right;"><a href="../../Gossip/JavaScript/JSON.html">中文</a></div>
+      <br>
+      XML is used to represent structured data, but dealing with XML DOM is complex. In a web application, data are not always so complex that we really need XML. If that's so, JSON may be used for data interchange. <br>
+      <br>
+      JSON stands for "JavaScript Object Notation". It is based on a subset of JavaScript object literals. You can find complete description of JSON structures in <a
+        href="http://www.json.org/">http://www.json.org</a>. In general, JSON is similar to object literals. The primary differences include:<br>
+      <ul>
+        <li>A name is a double-quoted Unicode string with backslash escaping.</li>
+        <li>A value can be a string in double quotes, or a number, <span
+            class="courier">true</span>, <span class="courier">false</span>, <span
+            class="courier">null</span>, an object or an array.</li>
+        <li>Several JavaScript data types, such as <span class="courier">Date</span>, <span
+            class="courier">Error</span>, <span class="courier">RegExp</span>, and <span
+            class="courier">Function</span>, are not included. </li>
+      </ul>
+      For example, the following is an object literal: <br>
+      <div class="courier" style="margin-left: 40px;"><span><strong>var obj = {</strong></span><span><strong><br>
+          </strong></span><span><strong>&nbsp;&nbsp;&nbsp; name : 'Justin',</strong></span><span><strong><br>
+          </strong></span><span><strong>&nbsp;&nbsp;&nbsp; age : 35,</strong></span><span><strong><br>
+          </strong></span><span><strong>&nbsp;&nbsp;&nbsp; childs : [ { name : 'hamimi', age : 3} ]</strong></span><span><strong><br>
+          </strong></span><span><strong>};</strong></span></div>
+      <br>
+      The following is its JSON representation: <br>
+      <div style="margin-left: 40px;"><span><strong class="courier">var json = '{"name": "Justin", "age": 35, "childs": [{"name": "hamimi", "age": 3}]}';</strong></span><span><strong><br>
+          </strong></span></div>
+      <br>
+      Format the above for readability: <br>
+      <div class="courier" style="margin-left: 40px;"><span><strong>{</strong></span><span><strong><br>
+          </strong></span><span><strong>&nbsp;&nbsp;&nbsp; "name":"Justin",</strong></span><span><strong><br>
+          </strong></span><span><strong>&nbsp;&nbsp;&nbsp; "age":35,</strong></span><span><strong><br>
+          </strong></span><span><strong>&nbsp;&nbsp;&nbsp; "childs":[</strong></span><span><strong><br>
+          </strong></span><span><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {</strong></span><span><strong><br>
+          </strong></span><span><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; "name":"hamimi",</strong></span><span><strong><br>
+          </strong></span><span><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; "age":3</strong></span><span><strong><br>
+          </strong></span><span><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }</strong></span><span><strong><br>
+          </strong></span><span><strong>&nbsp;&nbsp;&nbsp; ]</strong></span><span><strong><br>
+          </strong></span><span><strong>}</strong></span></div>
+      <br>
+      You can send a JSON string to the server. Creating a JSON string is easy. Firefox 3.1, Internet Explorer and newer browsers have a simple JSON library. Creating a JSON string from an object just needs the <span
+        class="courier">JSON.stringify</span> function. For example: <br>
+      <div class="courier" style="margin-left: 40px;"><span><strong>var obj = {</strong></span><span><strong><br>
+          </strong></span><span><strong>&nbsp;&nbsp;&nbsp; name : 'Justin',</strong></span><span><strong><br>
+          </strong></span><span><strong>&nbsp;&nbsp;&nbsp; age : 35,</strong></span><span><strong><br>
+          </strong></span><span><strong>&nbsp;&nbsp;&nbsp; childs : [ { name : 'hamimi', age : 3} ]</strong></span><span><strong><br>
+          </strong></span><span><strong>};</strong></span><span><strong><br>
+          </strong></span><span><strong>var json = JSON.stringify(obj);</strong></span><strong><br>
+        </strong></div>
+      <br>
+      Then, you can get a JSON string as shown previously. Sending JSON through an asynchronous object can be as follows: <br>
+      <div class="courier" style="margin-left: 40px;"><strong><span>var request = xhr(); // xhr() returns an asyhcnronous object</span></strong><strong><span><br>
+          </span></strong><strong><span>request.onreadystatechange = handleStateChange; // handleStateChange is a function</span></strong><strong><span><br>
+          </span></strong><strong><span>request.open('POST', url);</span></strong><strong><span><br>
+          </span></strong><strong><span>request.setRequestHeader('Content-Type', 'application/json');</span></strong><strong><span><br>
+          </span></strong><strong><span>request.send(json);</span></strong></div>
+      <br>
+      It's recommended to set the request header <span class="courier">'Content-Type'</span> as <span
+        class="courier">'application/json'</span>. Of course, the server has to parse the JSON string. You don't need to write one by yourself. The site <a
+        href="http://www.json.org/">http://www.json.org</a> provides JSON parsers with different language implementations to help you with parsing a JSON string. <br>
+      <br>
+      When a server sends a JSON string, you can use the <span class="courier">eval</span> function to convert the JSON string into a JavaScript object. For example: <br>
+      <div class="courier" style="margin-left: 40px;"><span><strong>var obj = eval(json);</strong></span></div>
+      <br>
+      The <span class="courier">eval</span> function, however, can also evaluate JavaScript expressions or execute JavaScript statements. If you just want to parse a JSON string into an object, the <span
+        class="courier">JSON.parse</span> function is recommended. For example: <br>
+      <div class="courier" style="margin-left: 40px;"><span><strong>var obj = JSON.parse(json);</strong></span></div>
+      <br>
+      For browsers before Firefox 3.1, Internet Explorer 8, or those without built-in JSON supports, you can download json2.js from <a
+        href="http://www.json.org">http://www.json.org</a> (and other files. see the README for details). Embed the script file in your page; you'll have the methods mentioned previously: <br>
+      <div class="courier" style="margin-left: 40px;"><span><strong>&lt;script type="text/javascript" src="json2.js"&gt;</strong></span></div>
+      <br>
+      If a browser has built-in JSON supports, json2.js does nothing. The following is a demonstration of using JSON. It provides a list of suggested terms. (The server isn't really a search engine.)&nbsp; If there're suggested terms, a JSON-formatted string array is sent, such as <span
+        class="courier">'["caterpillar", "ceo"]'</span>. (The server's suggested terms include <span
+        class="courier">"caterpillar"</span>, <span class="courier">"car"</span>, <span
+        class="courier">"ceo"</span>, <span class="courier">"c++"</span>, <span
+        class="courier">"justin"</span>, <span class="courier">"java"</span>, and <span
+        class="courier">"javascript"</span>.) You have to know the exact position of the input box to align suggested terms under it. You can see how to do this in the third example of <a
+        href="ElementPositions.html">Element Positions</a>. <br>
+      <ul>
+        <li><a href="samples/JSON-1.html">JSON-1.html</a></li>
+      </ul>
+      <pre>&lt;!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Strict//EN"&gt;
+&lt;html&gt;
+    &lt;head&gt;
+        &lt;meta content="text/html; charset=UTF-8" http-equiv="content-type"&gt;
+        &lt;style type="text/css"&gt;
+            div {
+                color: #ffffff;
+                background-color: #ff0000;
+                border-width: 1px;
+                border-color: black;
+                border-style: solid;
+                position: absolute;
+            }        
+        &lt;/style&gt;
+        &lt;script type="text/javascript" src="js/json2.js"&gt;&lt;/script&gt;
+        &lt;script type="text/javascript"&gt;
+            window.onload = function() {
+                function offset(element) {
+                    var x = 0;
+                    var y = 0;
+                    while(element) {
+                        x += element.offsetLeft;
+                        y += element.offsetTop;
+                        element = element.offsetParent;
+                    }
+                    return { 
+                        x: x, 
+                        y: y, 
+                        toString: function() {
+                            return '(' + this.x + ', ' + this.y + ')';
+                        }
+                    };
+                }
+                var xhr = window.XMLHttpRequest &amp;&amp; 
+                      (window.location.protocol !== 'file:' 
+                          || !window.ActiveXObject) ?
+                       function() {
+                           return new XMLHttpRequest();
+                       } :
+                       function() {
+                          try {
+                             return new ActiveXObject('Microsoft.XMLHTTP');
+                          } catch(e) {
+                             throw new Error('XMLHttpRequest not supported');
+                          }
+                       };
+                
+                function param(obj) {
+                    var pairs = [];
+                    for(var name in obj) {
+                        var pair = encodeURIComponent(name) + '=' + 
+                                   encodeURIComponent(obj[name]);
+                        pairs.push(pair.replace('/%20/g', '+'));
+                    }
+                    return pairs.join('&amp;');
+                }
+                
+                function ajax(option) {
+                    option.type = option.type || 'GET';
+                    option.header = option.header || {
+                      'Content-Type':'application/x-www-form-urlencoded'};
+                    option.callback = option.callback || function() {};
+                    
+                    if(!option.url) {
+                        return;
+                    }
+                    
+                    var request = xhr();
+                    request.onreadystatechange = function() {
+                        option.callback.call(request, request);
+                    };
+                    
+                    var body = null;
+                    var url = option.url;
+                    if(option.data) {
+                        if(option.type === 'POST') {
+                            body = param(option.data);
+                        }
+                        else {
+                            url = option.url + '?' + param(option.data) 
+                                     + '&amp;time=' + new Date().getTime();
+                        }
+                    }
+                    
+                    request.open(option.type, url);
+                    for(var name in option.header) {
+                        request.setRequestHeader(
+                                name, option.header[name]);
+                    }
+                    request.send(body);
+                }
+                var search = document.getElementById('search');
+                search.onkeyup = function() {
+                    var divs = document.getElementsByTagName('div');
+                    for(var i = 0; i &lt; divs.length; i++) {
+                        document.body.removeChild(divs[i]);
+                    }
+                    if(search.value === '') {
+                        return;
+                    }
+                    ajax({
+                        url     : 'JSON-1.php',
+                        data    : {keyword : search.value},
+                        callback: function(request) {
+                            if(request.readyState === 4) {
+                                if(request.status === 200) {
+                                    var keywords = JSON.parse(
+                                            request.responseText);
+                                    if(keywords.length !== 0) {
+                                        var innerHTML = '';
+                                        for(var i = 0; 
+                                              i &lt; keywords.length; i++) {
+                                            innerHTML += 
+                                                (keywords[i] + '&lt;br&gt;');
+                                        }
+                                        var div = 
+                                              document.createElement('div');
+                                        div.innerHTML = innerHTML;
+                                        var xy = offset(search);
+                                        div.style.left = xy.x + 'px';
+                                        div.style.top = 
+                                             xy.y + search.offsetHeight + 'px';
+                                        div.style.width = 
+                                             search.offsetWidth + 'px';
+                                        document.body.appendChild(div);
+                                    }
+                                    
+                                }
+                            }
+                        }
+                    });
+                };
+            };
+        &lt;/script&gt;        
+    &lt;/head&gt;
+    &lt;body&gt;
+        &lt;hr&gt;
+        Search: &lt;input id="search" type="text"&gt;
+    &lt;/body&gt;
+&lt;/html&gt;</pre>
+      <br>
+      This example doesn't consider users' typing speed, so it'll send a request every one typing. To avoid problems of frequent requests due to users' rapid typing, you may try a time period setting, such as send a request every one second. <br>
+      <br>
+      In addition, for each suggested terms, you may provide a <span class="courier">click</span> event handler. When a user clicks a term, set its text in the input box, and then remove the <span
+        class="courier">div</span> element. This is a practice left for you.<br>
+      <br>
+      <br>
+      <p></p>
+      <p></p>
+      <ul>
+      </ul>
+    </div>
+    <div class="aside">
+      
+       <br>
+      <br>
+      
+       <br>
+      <br>
+      
+       <br>
+      <br>
+      <br>
+    </div>
+      </body>
+</html>

@@ -1,0 +1,20 @@
+<html>
+    <head>
+        <meta content="text/html; charset=UTF-8" http-equiv="content-type">
+        <script type="text/javascript">
+            window.onload = function() {
+                function handler() {
+                    document.getElementById('console').innerHTML 
+                         = 'Who\'s clicked: ' + this.id;
+                }
+                document.getElementById('btn1').onclick = handler;
+                document.getElementById('btn2').onclick = handler;
+            };
+        </script>
+    </head>
+    <body>
+        <button id="btn1">Button 1</button><br>
+        <button id="btn2">Button 2</button><br>
+        <div id="console"></div>
+    </body>
+</html>

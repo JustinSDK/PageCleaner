@@ -1,0 +1,323 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html dir="ltr" lang="en">
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <title>What's this?</title>
+    <meta content="caterpillar" name="author">
+    <meta content="JavaScript function this" name="keywords">
+    <link href="css/std.css" rel="stylesheet" type="text/css">
+  </head>
+  <body>
+    <div class="header">
+      <div class="hgroup">
+        <h3><a href="http://openhome.cc/eGossip/">From eGossip@Openhome</a></h3>
+        <h1><a href="index.html">JavaScript Essence: What's this?<br>
+          </a></h1>
+      </div>
+    </div>
+    <div class="article">
+      <div align="right"><a href="../../Gossip/JavaScript/This.html">中文</a><br>
+      </div>
+      <br>
+      In JavaScript, a function is an object, an instance of <span class="courier">Function</span>. You can assign it to a variables or parameter. Of course, it's also workable to assign functions to the object properties. For example:<br>
+      <table class="cmd">
+        <tbody>
+          <tr>
+            <td><strong>js&gt; var p1 = { name : 'Justin', age&nbsp; : 35 };<br>
+                js&gt; var p2 = { name : 'momor', age&nbsp; : 32 };<br>
+                js&gt; function toString() {<br>
+                &nbsp; &gt;&nbsp;&nbsp;&nbsp;&nbsp; return '[' + this.name + ',' + this.age + ']';<br>
+                &nbsp; &gt; }<br>
+                js&gt; p1.toString = toString;</strong><br>
+              function toString() {<br>
+              &nbsp;&nbsp;&nbsp; return "[" + this.name + "," + this.age + "]";<br>
+              }<br>
+              <br>
+              <strong>js&gt; p2.toString = toString;</strong><br>
+              function toString() {<br>
+              &nbsp;&nbsp;&nbsp; return "[" + this.name + "," + this.age + "]";<br>
+              }<br>
+              <br>
+              <strong>js&gt; p1.toString();</strong><br>
+              [Justin,35]<br>
+              <strong>js&gt; p2.toString();</strong><br>
+              [momor,32]<br>
+              <strong>js&gt;</strong><br>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <br>
+      In the above example, a <span class="courier">toString</span> function is declared and then assigned as the <span
+        class="courier">toString</span> properties of <span class="courier">p1</span> and <span
+        class="courier">p2</span>. When <span class="courier">p1.toString()</span> is executed, <span
+        class="courier">toString</span> is like the method of <span class="courier">p1</span>. When <span
+        class="courier">p2.toString()</span> is executed, <span class="courier">toString</span> is like the method of <span
+        class="courier">p2</span>.<br>
+      <br>
+      The function <span class="courier">toString</span> uses the <span
+        class="courier">this</span> keyword. Every function has a <span
+        class="courier">this</span> object. The <span class="courier">this</span> object represents the current object. It depends how to call a function. For the above example, when <span
+        class="courier">p1.toString()</span> is executed, <span class="courier">this</span> is the object referred by <span
+        class="courier">p1</span> so the returned string contains values of <span
+        class="courier">p1.</span><span class="courier">name</span> and <span
+        class="courier">p1.age</span>. If <span class="courier">p2.toString()</span> is executed, <span
+        class="courier">this</span> is the object referred by <span class="courier">p2</span>.<br>
+      <br>
+      If you call a function through an object,&nbsp; <span class="courier">this</span> is the "owner" of the function. For example, when <span
+        class="courier">obj.func()</span> is executed, <span class="courier">obj</span> is the owner of <span
+        class="courier">func</span> and the reference of <span class="courier">func</span> and <span
+        class="courier">this</span> is the same.<br>
+      <br>
+      In JavaScript, a function is an instance of <span class="courier">Function</span>. All <span
+        class="courier">Function</span> instances have a <span class="courier">call</span> method. The first parameter lets you decide what object <span
+        class="courier">this</span> will be. For example, you can call a function as follows:<br>
+      <table class="cmd">
+        <tbody>
+          <tr>
+            <td><strong>js&gt; var p1 = { name : 'Justin', age&nbsp; : 35 };<br>
+                js&gt; var p2 = { name : 'momor', age&nbsp; : 32 };<br>
+                js&gt; function toString() {<br>
+                &nbsp; &gt;&nbsp;&nbsp;&nbsp;&nbsp; return '[' + this.name + ',' + this.age + ']';<br>
+                &nbsp; &gt; }<br>
+                js&gt; toString.call(p1);<br>
+              </strong>[Justin,35]<strong><br>
+                js&gt; toString.call(p2);<br>
+              </strong>[momor,32]<strong><br>
+                js&gt;</strong><br>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <br>
+      This time, the function <span class="courier">toString</span> is not an object property. The example uses a <span
+        class="courier">call</span> method to call <span class="courier">toString</span>. The first parameter accepts the object which <span
+        class="courier">this</span> will be in the function. If a function accepts arguments, you can append them after the first argument of the <span
+        class="courier">call</span> method. For example: <br>
+      <table class="cmd">
+        <tbody>
+          <tr>
+            <td><strong>js&gt; function add(num1, num2) {<br>
+                &nbsp; &gt;&nbsp;&nbsp;&nbsp;&nbsp; return this.num + num1 + num2;<br>
+                &nbsp; &gt; }<br>
+                js&gt; var o = { num : 10 };<br>
+                js&gt; add.call(o, 20, 30);<br>
+              </strong>60<strong><br>
+                js&gt;</strong><br>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <br>
+      All <span class="courier">Function</span> instances also have an <span
+        class="courier">apply</span> method. It's similar to the <span
+        class="courier">call</span> method. The first parameter of <span
+        class="courier">apply</span> accepts what <span class="courier">this</span> will be. You have to use an array to collect arguments when calling <span
+        class="courier">apply</span> if you want to specify arguments of the applied function. Use <span
+        class="courier">apply</span> if you have a list of reusable arguments among several functions. For example: <br>
+      <table class="cmd">
+        <tbody>
+          <tr>
+            <td><strong>js&gt; function add(num1, num2) {<br>
+                &nbsp; &gt;&nbsp;&nbsp;&nbsp;&nbsp; return this.num + num1 + num2;<br>
+                &nbsp; &gt; }<br>
+                js&gt; var o1 = { num : 10 };<br>
+                js&gt; var o2 = { num : 100 };<br>
+                js&gt; var args = [20, 30];<br>
+                js&gt; add.apply(o1, args);<br>
+              </strong>60<strong><br>
+                js&gt; add.apply(o2, args);<br>
+              </strong>150<strong><br>
+                js&gt;</strong><br>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <br>
+      So, <b>what <span class="courier">this</span> will be depends on how to call a function but not what object a function is belonging to.</b> You can let <span
+        class="courier">this</span> refer to another object even if a function is a property of an object.<br>
+      <table class="cmd">
+        <tbody>
+          <tr>
+            <td><strong>js&gt; var p1 = { name : 'Justin' };<br>
+                js&gt; var p2 = { name : 'momor' };<br>
+                js&gt; function toString() {<br>
+                &nbsp; &gt;&nbsp;&nbsp;&nbsp;&nbsp; return this.name;<br>
+                &nbsp; &gt; }<br>
+                js&gt; p1.toString = toString;<br>
+              </strong>function toString() {<br>
+              &nbsp;&nbsp;&nbsp; return this.name;<br>
+              }<strong><br>
+                <br>
+                js&gt; p2.toString = toString;<br>
+              </strong>function toString() {<br>
+              &nbsp;&nbsp;&nbsp; return this.name;<br>
+              }<br>
+              <strong><br>
+                js&gt; p1.toString();<br>
+              </strong>Justin<strong><br>
+                js&gt; p2.toString();<br>
+              </strong>momor<strong><br>
+                js&gt; p1.toString.call(p2);<br>
+              </strong>momor<strong><br>
+                js&gt;</strong><br>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <br>
+      The last statement is <span class="courier">p1.toString.call(p2)</span>. Although <span
+        class="courier">toString</span> is a property of <span class="courier">p1</span>, but the first argument of <span
+        class="courier">call</span> specify <span class="courier">p2</span> for <span
+        class="courier">this</span><span class="courier"></span> so it returns the value of <span
+        class="courier">p2.</span><span class="courier">name</span>.<br>
+      <br>
+      If you use an object literal to create an object, the values of properties can also functions. For example:<br>
+      <table class="cmd">
+        <tbody>
+          <tr>
+            <td><strong>js&gt; var o = {<br>
+                &nbsp; &gt;&nbsp;&nbsp;&nbsp;&nbsp; name : 'Justin',<br>
+                &nbsp; &gt;&nbsp;&nbsp;&nbsp;&nbsp; toString : function() {<br>
+                &nbsp; &gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; return this.name;<br>
+                &nbsp; &gt;&nbsp;&nbsp;&nbsp;&nbsp; }<br>
+                &nbsp; &gt; };<br>
+                js&gt; o.toString();<br>
+              </strong>Justin<strong><br>
+                js&gt;</strong><br>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <br>
+      The top-level functions are properties of the global object. If you call a top-level function, <span
+        class="courier">this</span> is the global object. For example:<br>
+      <table class="cmd">
+        <tbody>
+          <tr>
+            <td><strong>js&gt; function func() {<br>
+                &nbsp; &gt;&nbsp;&nbsp;&nbsp;&nbsp; return this;<br>
+                &nbsp; &gt; }<br>
+                js&gt; func() == this;<br>
+              </strong>true<strong><br>
+                js&gt; this.func() == this;<br>
+              </strong>true<strong><br>
+                js&gt;</strong><br>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <br>
+      When you can a local function directly, such as <span class="courier">function_name()</span>, <span
+        class="courier">this</span> also refers to the global object. For example: <br>
+      <table class="cmd">
+        <tbody>
+          <tr>
+            <td><strong>js&gt; function func() {<br>
+                &nbsp; &gt;&nbsp;&nbsp;&nbsp;&nbsp; function inner() {<br>
+                &nbsp; &gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; return this;<br>
+                &nbsp; &gt;&nbsp;&nbsp;&nbsp;&nbsp; }<br>
+                &nbsp; &gt;&nbsp;&nbsp;&nbsp;&nbsp; return inner();<br>
+                &nbsp; &gt; }<br>
+                js&gt; func() == this;<br>
+              </strong>true<strong><br>
+                js&gt; var o1 = { func : func };<br>
+                js&gt; o1.func() == o1;<br>
+              </strong>false<strong><br>
+                js&gt; o1.func() == this;<br>
+              </strong>true<strong><br>
+                js&gt; func.call(o1) == this;<br>
+              </strong>true<strong><br>
+                js&gt;</strong><br>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <br>
+      Even if <span class="courier">func</span> uses the <span class="courier">call</span> method and specifies <span
+        class="courier">o1</span> for <span class="courier">this</span> of <span
+        class="courier">func</span>, <span class="courier">this</span> of the <span
+        class="courier">inner</span> function still refers to the global object when called. You can compare the above example with the following example:<br>
+      <table class="cmd">
+        <tbody>
+          <tr>
+            <td><strong>js&gt; function func() {<br>
+                &nbsp; &gt;&nbsp;&nbsp;&nbsp;&nbsp; function inner() {<br>
+                &nbsp; &gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; return this;<br>
+                &nbsp; &gt;&nbsp;&nbsp;&nbsp;&nbsp; }<br>
+                &nbsp; &gt;&nbsp;&nbsp;&nbsp;&nbsp; this.inner = inner;<br>
+                &nbsp; &gt;&nbsp;&nbsp;&nbsp;&nbsp; return this.inner();<br>
+                &nbsp; &gt; }<br>
+                js&gt; func() == this;<br>
+              </strong>true<strong><br>
+                js&gt; var o1 = { func : func };<br>
+                js&gt; o1.func() == o1;<br>
+              </strong>true<strong><br>
+                js&gt; o1.func.call(this) == this;<br>
+              </strong>true<strong><br>
+                js&gt; o1.func.call(o1) == o1;<br>
+              </strong>true<strong><br>
+                js&gt;</strong><br>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <br>
+      It's important to figure out what <span class="courier">this</span> will be when a function is called. <b>It depends on how to call a function, not how to define a function.</b><br>
+      <br>
+      For example, if you want to implement your own <span class="courier">forEach</span> method<span
+        class="courier"></span>, as follows:&nbsp;&nbsp;&nbsp; <br>
+      <table class="cmd">
+        <tbody>
+          <tr>
+            <td><strong>js&gt; var obj = {<br>
+                &nbsp; &gt;&nbsp;&nbsp;&nbsp;&nbsp; '0' : 100,<br>
+                &nbsp; &gt;&nbsp;&nbsp;&nbsp;&nbsp; '1' : 200,<br>
+                &nbsp; &gt;&nbsp;&nbsp;&nbsp;&nbsp; '2' : 300,<br>
+                &nbsp; &gt;&nbsp;&nbsp;&nbsp;&nbsp; length : 3,<br>
+                &nbsp; &gt;&nbsp;&nbsp;&nbsp;&nbsp; forEach : function(callback) {<br>
+                &nbsp; &gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; for(var i = 0; i &lt; this.length; i++) {<br>
+                &nbsp; &gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; callback(this[i]);<br>
+                &nbsp; &gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }<br>
+                &nbsp; &gt;&nbsp;&nbsp;&nbsp;&nbsp; }<br>
+                &nbsp; &gt; };<br>
+                js&gt; obj.forEach(function(element) {<br>
+                &nbsp; &gt;&nbsp;&nbsp;&nbsp;&nbsp; print(element);<br>
+                &nbsp; &gt; });<br>
+              </strong>100<br>
+              200<br>
+              300<strong><br>
+                js&gt;</strong><br>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <br>
+      In the above example, when <span class="courier">obj.forEach(...)</span> is executed, <span
+        class="courier">obj</span> and <span class="courier">this</span> will have the same reference so you can use properties of <span
+        class="courier">obj</span>, such as <span class="courier">length</span>. A function is an object so you can pass it to <span
+        class="courier">forEach</span>. The above example is the basic demonstration about how to implement the <span
+        class="courier">forEach</span> method of <span class="courier">Array</span>. The <span
+        class="courier">forEach</span> method has been introduced in <a
+        href="Array.html">Array</a>.<br>
+      <br>
+      <br>
+      <p></p>
+      <p></p>
+      <ul>
+      </ul>
+    </div>
+    <div class="aside">
+      
+       <br>
+      <br>
+      
+       <br>
+      <br>
+      
+       <br>
+      <br>
+      <br>
+    </div>
+      </body>
+</html>

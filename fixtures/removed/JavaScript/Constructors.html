@@ -1,0 +1,238 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html dir="ltr" lang="en">
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <title>Constructors</title>
+    <meta content="caterpillar" name="author">
+    <meta content="JavaScript Constructor" name="keywords">
+    <link href="css/std.css" rel="stylesheet" type="text/css">
+  </head>
+  <body>
+    <div class="header">
+      <div class="hgroup">
+        <h3><a href="http://openhome.cc/eGossip/">From eGossip@Openhome</a></h3>
+        <h1><a href="index.html">JavaScript Essence: Constructors<br>
+          </a></h1>
+      </div>
+    </div>
+    <div class="article">
+      <div align="right"><a href="../../Gossip/JavaScript/Constructor.html">中文</a><br>
+      </div>
+      <br>
+      If you want to create some objects:<br>
+      <blockquote><strong><span class="courier">var p1 = {name : 'Justin', age : 35};</span><br>
+          <span class="courier">var p2 = {name : 'Momor', age : 32};</span><br>
+          <span class="courier">var p3 = {name : 'Hamimi', age : 2};</span><br>
+        </strong></blockquote>
+      These objects have the same properties but different values. You can define a function. <br>
+      <blockquote><span class="courier"><strong>function Person(name, age) {<br>
+            &nbsp;&nbsp;&nbsp; this.name = name;<br>
+            &nbsp;&nbsp;&nbsp; this.age = age;<br>
+            }</strong><br>
+        </span></blockquote>
+      Calling it as follows will have the same effect:<br>
+      <blockquote><b><span class="courier">var p1 = new Person('Justin', 35);</span><br>
+          <span class="courier">var p2 = new Person('Momor', 32);</span><br>
+          <span class="courier">var p3 = new Person('Hamimi', 2);</span></b><br>
+      </blockquote>
+      <br>
+      Once you have a function like <span class="courier">Person</span>, you can use the <span
+        class="courier">new</span> operator to construct an object. Functions such as <span
+        class="courier">Person</span> are so-called object constructors. Developers from class-based languages may also say it's like a class. This is just an analogy but it's different from a class. <br>
+      <br>
+      Actually, when you <span class="courier">new</span> a function, you do things such as follows: (There are still more details and I will talk about it afterward.)<br>
+      <table class="cmd">
+        <tbody>
+          <tr>
+            <td><strong>js&gt; function Person(name, age) {<br>
+                &nbsp; &gt;&nbsp;&nbsp;&nbsp;&nbsp; this.name = name;<br>
+                &nbsp; &gt;&nbsp;&nbsp;&nbsp;&nbsp; this.age = age;<br>
+                &nbsp; &gt;&nbsp;&nbsp;&nbsp;&nbsp; this.toString = function() {<br>
+                &nbsp; &gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; return '[' + this.name + ', ' + this.age + ']';<br>
+                &nbsp; &gt;&nbsp;&nbsp;&nbsp;&nbsp; };<br>
+                &nbsp; &gt; }<br>
+                js&gt; var p = {};<br>
+                js&gt; Person.call(p, 'Justin', 35);<br>
+                js&gt; p</strong><br>
+              [Justin, 35]<br>
+              <strong>js&gt;</strong><br>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <br>
+      This also explains why <span class="courier">new</span> followed by the <span
+        class="courier">Person</span> function will return an object with <span
+        class="courier">name</span> and <span class="courier">age</span>. In the function, <strong><span
+          class="courier">this</span></strong> and <span class="courier">p</span> has the same reference so if you add properties to <span
+        class="courier">this</span>, it equals adding properties to <span
+        class="courier">p</span>. <br>
+      <br>
+      While a function is used as a constructor, basically, you don't need to <span
+        class="courier">return</span> anything. If you <span class="courier">return</span> something from a constructor, what you get is the returned value but not <span
+        class="courier">this</span> reference. For example: <br>
+      <table class="cmd">
+        <tbody>
+          <tr>
+            <td><strong>js&gt; function Person(name, age)&nbsp; {<br>
+                &nbsp; &gt;&nbsp;&nbsp;&nbsp;&nbsp; return [];<br>
+                &nbsp; &gt; }<br>
+                js&gt; var o = new Person();<br>
+                js&gt; o instanceof Person;<br>
+              </strong>false<strong><br>
+                js&gt; o instanceof Array;<br>
+              </strong>true<strong><br>
+                js&gt;</strong><br>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <br>
+      If there's a constructor after <span class="courier">new</span>, it has the effect like the following: <br>
+      <table class="cmd">
+        <tbody>
+          <tr>
+            <td><strong>js&gt; function Person(name, age) {<br>
+                &nbsp; &gt;&nbsp;&nbsp;&nbsp;&nbsp; this.name = name;<br>
+                &nbsp; &gt;&nbsp;&nbsp;&nbsp;&nbsp; this.age = age;<br>
+                &nbsp; &gt;&nbsp;&nbsp;&nbsp;&nbsp; this.toString = function() {<br>
+                &nbsp; &gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; return '[' + this.name + ', ' + this.age + ']';<br>
+                &nbsp; &gt;&nbsp;&nbsp;&nbsp;&nbsp; };<br>
+                &nbsp; &gt;&nbsp;&nbsp;&nbsp;&nbsp; return this;<br>
+                &nbsp; &gt; }<br>
+                js&gt; var p = {};<br>
+                js&gt; p = Person.call(p, 'Justin', 35);<br>
+              </strong>[Justin, 35]<strong><br>
+                js&gt; </strong><br>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <br>
+      Every object created by <span class="courier">new</span> has a <span
+        class="courier">constructor</span> property which refers to the constructor function of the object. For example: <br>
+      <table class="cmd">
+        <tbody>
+          <tr>
+            <td><strong>js&gt; function Person() {}<br>
+                js&gt; var p = new Person();<br>
+                js&gt; p.constructor == Person<br>
+              </strong>true<strong><br>
+                js&gt;</strong><br>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <br>
+      The <span class="courier">constructor</span> property can be a reference for determining what type of an object is. But be careful, the <span
+        class="courier">constructor</span> property is updatable.<br>
+      <br>
+      In the constructor, properties are created on the object referred by <span
+        class="courier">this</span>, the default returned object of a constructor, so you can access them through the dot operator. For example:&nbsp; <br>
+      <table class="cmd">
+        <tbody>
+          <tr>
+            <td><strong>js&gt; function Person(name, age) {<br>
+                &nbsp; &gt;&nbsp;&nbsp;&nbsp;&nbsp; this.name = name;<br>
+                &nbsp; &gt;&nbsp;&nbsp;&nbsp;&nbsp; this.age = age;<br>
+                &nbsp; &gt; }<br>
+                js&gt; var p = new Person('Justin', 35);<br>
+                js&gt; p.name;<br>
+              </strong>Justin<strong><br>
+                js&gt; p.age;<br>
+              </strong>35<strong><br>
+                js&gt;<br>
+              </strong> </td>
+          </tr>
+        </tbody>
+      </table>
+      <br>
+      People familiar with other object-oriented languages, such as Java, might think <span
+        class="courier">name</span> and <span class="courier">age</span> unsafe because they are not private properties. On the contrary, they are like public properties of a class-based object. JavaScript itself does not support private accessibility of some object-oriented languages. If you want to simulate a private property, as follows:<br>
+      <table class="cmd">
+        <tbody>
+          <tr>
+            <td><strong>js&gt; function Person(name, age) {<br>
+                &nbsp; &gt;&nbsp;&nbsp;&nbsp;&nbsp; this.getName = function() {<br>
+                &nbsp; &gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; return name;<br>
+                &nbsp; &gt;&nbsp;&nbsp;&nbsp;&nbsp; };<br>
+                &nbsp; &gt;&nbsp;&nbsp;&nbsp;&nbsp; this.age = age;<br>
+                &nbsp; &gt; }<br>
+                js&gt; var p = new Person('Justin', 35);<br>
+                js&gt; print(p.name);<br>
+              </strong>undefined<strong><br>
+                js&gt; print(p.getName());<br>
+              </strong>Justin<strong><br>
+                js&gt; print(p.age);<br>
+              </strong>35<strong><br>
+                js&gt;</strong><strong><br>
+              </strong> </td>
+          </tr>
+        </tbody>
+      </table>
+      <br>
+      In the above example, you cannot update <span class="courier">name</span> directly but can retrieve it through <span
+        class="courier">getName()</span>. That's because the function referred by <span
+        class="courier">getName</span>, a property of <span class="courier">this</span>, is a closure. It closes the parameter <span
+        class="courier">name</span>. A parameter is also a local variable so you cannot access it directly. You have to use the <span
+        class="courier">getName</span> property of the returned object, namely <span
+        class="courier">this</span>. This is a way for JavaScript to define a so-called private variable. <br>
+      <br>
+      What a closure closes are variables so you can protect variables while updating them, such as follows: <br>
+      <table class="cmd">
+        <tbody>
+          <tr>
+            <td><strong>js&gt; function Account() {<br>
+                &nbsp; &gt;&nbsp;&nbsp;&nbsp;&nbsp; var balance = 0;<br>
+                &nbsp; &gt;&nbsp;&nbsp;&nbsp;&nbsp; this.getBalance = function() {<br>
+                &nbsp; &gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; return balance;<br>
+                &nbsp; &gt;&nbsp;&nbsp;&nbsp;&nbsp; };<br>
+                &nbsp; &gt;&nbsp;&nbsp;&nbsp;&nbsp; this.setBalance = function(money) {<br>
+                &nbsp; &gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; if(money &lt; 0) {<br>
+                &nbsp; &gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; throw new Error('can\'t set negative balance.');<br>
+                &nbsp; &gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }<br>
+                &nbsp; &gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; balance = money;<br>
+                &nbsp; &gt;&nbsp;&nbsp;&nbsp;&nbsp; };<br>
+                &nbsp; &gt; }<br>
+                js&gt; var acct = new Account();<br>
+                js&gt; acct.getBalance();<br>
+              </strong>0<strong><br>
+                js&gt; acct.setBalance(1000);<br>
+                js&gt; acct.getBalance();<br>
+              </strong>1000<strong><br>
+                js&gt; acct.setBalance(-1000);</strong><br>
+              js: "&lt;stdin&gt;", line 113: exception from uncaught JavaScript throw: Error: can't<br>
+              set negative balance.<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; at &lt;stdin&gt;:113<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; at &lt;stdin&gt;:111<strong><br>
+                <br>
+                js&gt;</strong><strong><br>
+                js&gt; print(p.age);<br>
+              </strong>35<strong><br>
+                js&gt;</strong><strong><br>
+              </strong> </td>
+          </tr>
+        </tbody>
+      </table>
+      <br>
+      <br>
+      <br>
+      <p></p>
+      <p></p>
+      <ul>
+      </ul>
+    </div>
+    <div class="aside">
+      
+       <br>
+      <br>
+      
+       <br>
+      <br>
+      
+       <br>
+      <br>
+      <br>
+    </div>
+      </body>
+</html>
