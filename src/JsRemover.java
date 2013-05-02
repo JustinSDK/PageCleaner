@@ -49,10 +49,9 @@ public class JsRemover {
                 + "Examples:\n"
                 + "\tRemove JavaScript from a html page:\n"
                 + "\t\tjava JsRemover UTF-8 index.html\n"
-                + "\t\tjava JsRemover UTF-8 index.html\n"
-                + "\t\tjava JsRemover UTF-8 JavaScript/index.html\n\n"
+                + "\t\tjava JsRemover UTF-8 JavaScript/index.html dest/index.html\n\n"
                 + "\tRemove JavaScript from all pages in a directory:\n"
                 + "\t\tjava JsRemover UTF-8 JavaScript\n"
-                + "\t\tjava JsRemover UTF-8 JavaScript\n");
+                + "\t\tjava JsRemover UTF-8 JavaScript dest\n");
     }
 }
