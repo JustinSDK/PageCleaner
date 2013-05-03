@@ -10,40 +10,47 @@ import org.junit.Before;
 import org.junit.Test;
 
 public class AdSenseRemoverTest {
-    private Path testedDir;
-    private Path testedFile;
     private Path removedFile;
-    private Path destFile;
     private String charsetName;
     
     @Before
     public void setUp() {
-        testedDir = Paths.get("fixtures/test/Blog");
-        testedFile = Paths.get("fixtures/test/Blog/index.html");
         removedFile = Paths.get("fixtures/removed/Blog/index.html");
-        destFile = Paths.get("fixtures/test/dest/index.html");
         charsetName = "UTF-8";
     }
     
     @Test
     public void testRemoveJsDir() throws Exception {
-        AdSenseRemover.removeJsDir(testedDir, charsetName);
+        Path srcDir = Paths.get("fixtures/test/AdSenseRemover/Blog1");
+        AdSenseRemover.removeJsDir(srcDir, charsetName);
         
-        assertRemoved(testedDir, "test", "removed", charsetName);
+        assertRemoved(srcDir, "test/AdSenseRemover/Blog1", "removed/Blog", charsetName);
+    }
+    
+    @Test
+    public void testRemoveJsDirAndSaveAs() throws Exception {
+        Path srcDir = Paths.get("fixtures/test/AdSenseRemover/Blog2");
+        Path destDir = Paths.get("fixtures/dest/AdSenseRemover/Blog2");
+        AdSenseRemover.removeJsDirAndSaveAs(srcDir, destDir, charsetName);
+        
+        assertRemoved(srcDir, "dest/AdSenseRemover/Blog2", "removed/Blog", charsetName);
     }
     
     @Test
     public void testRemoveFileJs() throws Exception {
-        AdSenseRemover.removeFileJs(testedFile, charsetName);
+        Path srcFile = Paths.get("fixtures/test/AdSenseRemover/index1.html");
+        AdSenseRemover.removeFileJs(srcFile, charsetName);
         
-        String result = readAllText(testedFile, charsetName);
+        String result = readAllText(srcFile, charsetName);
         String expResult = readAllText(removedFile, charsetName);
         assertEquals(expResult, result);
     }
     
     @Test
     public void testRemoveFileJsAndSaveAs() throws IOException {
-        AdSenseRemover.removeFileJsAndSaveAs(testedFile, destFile, charsetName);
+        Path srcFile = Paths.get("fixtures/test/AdSenseRemover/index2.html");
+        Path destFile = Paths.get("fixtures/dest/AdSenseRemover/index2.html");
+        AdSenseRemover.removeFileJsAndSaveAs(srcFile, destFile, charsetName);
         
         String result = readAllText(destFile, charsetName);
         String expResult = readAllText(removedFile, charsetName);
@@ -52,7 +59,8 @@ public class AdSenseRemoverTest {
 
     @Test
     public void testRemoveHtmlJs() throws IOException {
-        String html = readAllText(testedFile, charsetName);
+        Path srcFile = Paths.get("fixtures/test/AdSenseRemover/index2.html");
+        String html = readAllText(srcFile, charsetName);
         String result = AdSenseRemover.removeHtmlJs(html);
         String expResult = readAllText(removedFile, charsetName);
         assertEquals(expResult, result);
@@ -60,7 +68,8 @@ public class AdSenseRemoverTest {
     
     @Test
     public void testReadFileWithoutJs() throws IOException {
-        String result = AdSenseRemover.readFileWithoutJs(testedFile, charsetName);
+        Path srcFile = Paths.get("fixtures/test/AdSenseRemover/index2.html");
+        String result = AdSenseRemover.readFileWithoutJs(srcFile, charsetName);
         String expResult = readAllText(removedFile, charsetName);
         assertEquals(expResult, result);
     }

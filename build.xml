@@ -73,10 +73,12 @@
     -->
     <property name="fixtures.original.dir" value="fixtures/original"/> 
     <property name="fixtures.test.dir" value="fixtures/test"/> 
+    <property name="fixtures.dest.dir" value="fixtures/dest"/> 
     <property name="fixtures.removed.dir" value="fixtures/removed"/> 
 
     <target name="-pre-compile-test"> 
         <delete dir="${fixtures.test.dir}"/>
+        <delete dir="${fixtures.dest.dir}"/>
         <mkdir dir="${fixtures.test.dir}"/> 
         <copy todir="${fixtures.test.dir}"> 
             <fileset dir="${fixtures.original.dir}"/> 
