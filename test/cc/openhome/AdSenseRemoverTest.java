@@ -18,9 +18,9 @@ public class AdSenseRemoverTest {
     
     @Before
     public void setUp() {
-        testedDir = Paths.get("fixtures/test/JavaScript");
-        testedFile = Paths.get("fixtures/test/JavaScript/index.html");
-        removedFile = Paths.get("fixtures/removed/JavaScript/index.html");
+        testedDir = Paths.get("fixtures/test/Blog");
+        testedFile = Paths.get("fixtures/test/Blog/index.html");
+        removedFile = Paths.get("fixtures/removed/Blog/index.html");
         destFile = Paths.get("fixtures/test/dest/index.html");
         charsetName = "UTF-8";
     }

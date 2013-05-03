@@ -1,45 +1,16 @@
 
 import static cc.openhome.AdSenseRemover.*;
+import cc.openhome.Options;
 import java.io.IOException;
 import static java.lang.System.out;
 import static java.nio.file.Files.isDirectory;
-import java.nio.file.Path;
-import static java.nio.file.Paths.get;
 
 public class JsRemover {
     public static void main(String[] args) throws IOException {
         if (args.length < 2) {
             prompt();
         } else {
-            String charsetName = args[0];
-            String srcName = args[1];
-            if(args.length == 2) {
-                removeAdSenseJs(srcName, charsetName);
-            } else {
-                String destName = args[2];
-                removeAdSenseJsAndSaveAs(srcName, destName, charsetName);
-            }
-        }
-    }
-
-    private static void removeAdSenseJs(String srcName, String charsetName)
-            throws IOException {
-        Path file = get(srcName);
-        if (isDirectory(file)) {
-            removeJsDir(file, charsetName);
-        } else {
-            removeFileJs(file, charsetName);
-        }
-    }
-    
-    private static void removeAdSenseJsAndSaveAs(String srcName, String destName, String charsetName)
-            throws IOException {
-        Path src = get(srcName);
-        Path dest = get(destName);
-        if (isDirectory(src)) {
-            removeJsDirAndSaveAs(src, dest, charsetName);
-        } else {
-            removeFileJsAndSaveAs(src, dest, charsetName);
+            removeAdSense(new Options(args));
         }
     }
 
@@ -53,5 +24,31 @@ public class JsRemover {
                 + "\tRemove JavaScript from all pages in a directory:\n"
                 + "\t\tjava JsRemover UTF-8 JavaScript\n"
                 + "\t\tjava JsRemover UTF-8 JavaScript dest\n");
+    }
+
+    public static void removeAdSense(Options options) throws IOException {
+        if(options.src.equals(options.dest)) {
+            removeJsAndSaveBack(options);
+        } else {
+            removeAdSenseJsAndSaveAs(options);
+        }
+    }
+    
+    public static void removeJsAndSaveBack(Options options)
+            throws IOException {
+        if (isDirectory(options.src)) {
+            removeJsDir(options.src, options.charsetName);
+        } else {
+            removeFileJs(options.src, options.charsetName);
+        }
+    }
+    
+    public static void removeAdSenseJsAndSaveAs(Options options)
+            throws IOException {
+        if (isDirectory(options.src)) {
+            removeJsDirAndSaveAs(options.src, options.dest, options.charsetName);
+        } else {
+            removeFileJsAndSaveAs(options.src, options.dest, options.charsetName);
+        }
     }
 }

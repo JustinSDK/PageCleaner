@@ -42,7 +42,7 @@ public class AdSenseRemover {
     }
     
     public static void removeJsDirAndSaveAs(Path src, Path dest, String charsetName) throws IOException {
-        Files.createDirectories(dest.getParent());
+        Files.createDirectories(dest);
         try(DirectoryStream<Path> pages = newDirectoryStream(src, "*.{htm,html}")) {
             for (Path page: pages) { 
                 String html = readFileWithoutJs(page, charsetName);
