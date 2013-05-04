@@ -73,6 +73,8 @@
     -->
     <property name="fixtures.original.dir" value="fixtures/original"/> 
     <property name="fixtures.test.dir" value="fixtures/test"/> 
+    <property name="fixtures.test.JsRemover.dir" value="fixtures/test/JsRemover"/> 
+    <property name="fixtures.test.AdSenseRemover.dir" value="fixtures/test/AdSenseRemover"/> 
     <property name="fixtures.dest.dir" value="fixtures/dest"/> 
     <property name="fixtures.removed.dir" value="fixtures/removed"/> 
 
@@ -80,7 +82,12 @@
         <delete dir="${fixtures.test.dir}"/>
         <delete dir="${fixtures.dest.dir}"/>
         <mkdir dir="${fixtures.test.dir}"/> 
-        <copy todir="${fixtures.test.dir}"> 
+        <mkdir dir="${fixtures.test.JsRemover.dir}"/> 
+        <mkdir dir="${fixtures.test.AdSenseRemover.dir}"/> 
+        <copy todir="${fixtures.test.JsRemover.dir}"> 
+            <fileset dir="${fixtures.original.dir}"/> 
+        </copy> 
+        <copy todir="${fixtures.test.AdSenseRemover.dir}"> 
             <fileset dir="${fixtures.original.dir}"/> 
         </copy> 
     </target> 
