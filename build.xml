@@ -89,6 +89,11 @@
         </copy> 
         <copy todir="${fixtures.test.AdSenseRemover.dir}"> 
             <fileset dir="${fixtures.original.dir}"/> 
-        </copy> 
+        </copy>         
     </target> 
+    
+    <target name="-post-clean"> 
+        <delete dir="${fixtures.test.dir}"/>
+        <delete dir="${fixtures.dest.dir}"/>
+    </target>
 </project>
