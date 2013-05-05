@@ -1,6 +1,6 @@
 
 import static cc.openhome.AdSenseRemover.*;
-import cc.openhome.Options;
+import cc.openhome.Args;
 import java.io.IOException;
 import static java.lang.System.out;
 import static java.nio.file.Files.isDirectory;
@@ -10,7 +10,7 @@ public class JsRemover {
         if (args.length < 2) {
             prompt();
         } else {
-            removeAdSense(new Options(args));
+            removeAdSense(new Args(args));
         }
     }
 
@@ -26,29 +26,29 @@ public class JsRemover {
                 + "\t\tjava JsRemover UTF-8 JavaScript dest\n");
     }
 
-    public static void removeAdSense(Options options) throws IOException {
-        if(options.src.equals(options.dest)) {
-            removeJsAndSaveBack(options);
+    public static void removeAdSense(Args args) throws IOException {
+        if(args.hasSameSrcDest()) {
+            removeJsAndSaveBack(args);
         } else {
-            removeAdSenseJsAndSaveAs(options);
+            removeAdSenseJsAndSaveAs(args);
         }
     }
     
-    public static void removeJsAndSaveBack(Options options)
+    public static void removeJsAndSaveBack(Args args)
             throws IOException {
-        if (isDirectory(options.src)) {
-            removeJsDir(options.src, options.charsetName);
-        } else {
-            removeFileJs(options.src, options.charsetName);
+        if (args.isSrcDirectory()) {
+            removeJsDir(args.src, args.charsetName);
+        } else if(args.isSrcRegularFile()) {
+            removeFileJs(args.src, args.charsetName);
         }
     }
     
-    public static void removeAdSenseJsAndSaveAs(Options options)
+    public static void removeAdSenseJsAndSaveAs(Args args)
             throws IOException {
-        if (isDirectory(options.src)) {
-            removeJsDirAndSaveAs(options.src, options.dest, options.charsetName);
-        } else {
-            removeFileJsAndSaveAs(options.src, options.dest, options.charsetName);
+        if (args.isSrcDirectory()) {
+            removeJsDirAndSaveAs(args.src, args.dest, args.charsetName);
+        } else if (args.isSrcRegularFile()) {
+            removeFileJsAndSaveAs(args.src, args.dest, args.charsetName);
         }
     }
 }
