@@ -1,0 +1,142 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html dir="ltr" lang="en">
+  <head>
+    <meta content="text/html; charset=UTF-8" http-equiv="content-type">
+    <title>Understanding Lambda/Closure, Part 5 - Revisiting an Old Proposal in Java</title>
+    <meta content="caterpillar" name="author">
+    <meta content="imperative functional (1)" name="keywords">
+    <link href="css/std.css" rel="stylesheet" type="text/css">
+  </head>
+  <body>
+    <div class="header">
+      <div class="hgroup">
+        <h3><a href="http://openhome.cc/eGossip/">From eGossip@Openhome</a></h3>
+        <h1><a href="index.html">Understanding Lambda/Closure, Part 5 - Revisiting an Old Proposal in Java<br>
+          </a></h1>
+      </div>
+    </div>
+    <div class="article"><br>
+      Finally, we start to look at lambda/closure in Java, but I'll discuss <a
+        href="http://cr.openjdk.java.net/%7Emr/lambda/straw-man/">an old proposal</a> in 2009. Discussing the old proposal helps us understanding why lambda/closure evolved into the current state in JDK8.<br>
+      <br>
+      If you want to sort a list of integers, you may write the following code With JDK versions prior to JDK8.<br>
+      <div class="createlink courier" style="margin-left: 40px;"><span>// The asList and sort methods have been </span><span><br>
+        </span><span>// static imported from Arrays and Collections</span><span><br>
+        </span><span>List&lt;Integer&gt; numbers = asList(3, 2, 6, 4);&nbsp; </span><span><br>
+        </span><span>&nbsp; </span><span><br>
+        </span><span>sort(numbers, <strong>new Comparator&lt;Integer&gt;() {&nbsp; </strong></span><strong><span><br>
+          </span></strong><strong><span>&nbsp;&nbsp;&nbsp; public int compare(Integer n1, Integer n2) {&nbsp; </span></strong><strong><span><br>
+          </span></strong><strong><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; return -n1.compareTo(n2);&nbsp; </span></strong><strong><span><br>
+          </span></strong><strong><span>&nbsp;&nbsp;&nbsp; }&nbsp; </span></strong><strong><span><br>
+          </span></strong><span><strong>}</strong>);</span></div>
+      <br>
+      You have to tell the <span class="courier">sort</span> method what's the order of two compared numbers. Java, however, doesn't have first-class functions, so you have to provide an instance of <span
+        class="courier">Comparator</span>. The above example creates the instance from an anonymous class, but the syntax makes us hard to figure out what we want the <span
+        class="courier">sort</span> method to do. We may use a proper variable name to improve the readability. For example:<br>
+      <div class="courier" style="margin-left: 40px;"><span>List&lt;Integer&gt; numbers = asList(3, 2, 6, 4);&nbsp; </span><span><br>
+        </span><span>&nbsp;&nbsp;&nbsp; </span><span><br>
+        </span><span>Comparator&lt;Integer&gt; <strong>descending</strong> = new Comparator&lt;Integer&gt;() {&nbsp; </span><span><br>
+        </span><span>&nbsp;&nbsp;&nbsp; public int compare(Integer n1, Integer n2) {&nbsp; </span><span><br>
+        </span><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; return -n1.compareTo(n2);&nbsp; </span><span><br>
+        </span><span>&nbsp;&nbsp;&nbsp; }&nbsp; </span><span><br>
+        </span><span>};</span><span><br>
+        </span><span><br>
+        </span><span>sort(numbers, <strong>descending</strong>);</span></div>
+      <br>
+      Now, we can clearly see what the <span class="courier">sort</span> method does, but the anonymous class is still annoying. If we can use lambda/closure, the code will be short and clear. For example:<br>
+      <div class="courier" style="margin-left: 40px;"><span>List&lt;Integer&gt; numbers = asList(3, 2, 6, 4);</span><span><br>
+        </span><span>sort(numbers, <strong>(n1, n2) -&gt; -n1.compareTo(n2)</strong>);</span></div>
+      <br>
+      In Java, an anonymous class is a similar thing to lambda/closure, and that's why some guys said Java doesn't need lambda/closure. Basically, this is true. We just have to write more code in some scenarios. In recent years, writing clean code is becoming more and more important. Even though Java without lambda/closure can write everything you want, using lambda/closure can write clean code read by you or someone later and improve productivity. Just as <a
+        href="https://sites.google.com/site/unclebobconsultingllc/">Uncle Bob Martin</a> said in <a
+        href="http://www.amazon.com/Clean-Code-Handbook-Software-Craftsmanship/dp/0132350882">Clean Code</a>: <br>
+      <br>
+      <div style="margin-left: 40px;"><span style="font-style: italic;"><strong>The code you are trying to write today will be hard or easy to write depending on how hard or easy the surrounding code is to read.</strong><strong><br>
+          </strong></span></div>
+      <br>
+      The length syntax of anonymous classes is not the only problem. If an anonymous class wants to catch a local variable, the variable must be <span
+        class="courier">final</span>. For example:<br>
+      <div class="courier" style="margin-left: 40px;"><span>public static FactorProducer createFactorProducer(max) {</span><span><br>
+        </span><span>&nbsp;&nbsp;&nbsp; <strong>final</strong> int[] primes = ...;</span><span><br>
+        </span><span>&nbsp;&nbsp;&nbsp; FactorProducer producer = new FactorProducer() {</span><span><br>
+        </span><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; public int factor() {</span><span><br>
+        </span><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ...</span><span><br>
+        </span><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; while(pow(<strong>primes</strong>[i], 2)) {</span><span><br>
+        </span><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ...</span><span><br>
+        </span><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }</span><span><br>
+        </span><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }</span><span><br>
+        </span><span>&nbsp;&nbsp;&nbsp; };</span><span><br>
+        </span><span>&nbsp;&nbsp;&nbsp; return producer;</span><span><br>
+        </span><span>}</span></div>
+      <br>
+      In Java, a local variable has a different lifecycle from an object. Once a method is executed, all local variables end their lifecycles. If an instance of an anonymous class really catches a local variable and is returned from the method, what will happen when accessing that dead variable? To avoid the problem, Java compiler forces you to add a modifier <span
+        class="courier">final</span> in front of the local variable used by an anonymous class. The caught variable (not the referred object) will be read-only. Under the table, Java compiler creates a new variable in the anonymous class, copies the value of the <span
+        class="courier">final</span> variable to it. You don't really catch the outer local variable; you just get a new variable and a copied value. <br>
+      <br>
+      Does a <span class="courier">final</span> variable in anonymous classes cause a problem? Or, does a read-only free variable in closure cause a problem? That depends on what you want a closure to do. In <a
+        href="UnderstandingLambdaClosure2.html">Understanding Lambda/Closure, Part 2</a>, we’ve seen closures may simulate <span
+        class="courier">private</span> feature in JavaScript, so writable free variables are necessary in that condition. Writable free variables, however, are fundamentally serial, such as:<br>
+      <div class="courier" style="margin-left: 40px;"><span>var sum = 0;</span><span><br>
+        </span><span>[1, 2, 3, 4, 5].forEach(function(elem) {</span><span><br>
+        </span><span>&nbsp;&nbsp;&nbsp; sum += elem;</span><span><br>
+        </span><span>});</span></div>
+      <br>
+      Writable free variables also mean mutable states, and they'll cause locking problems in concurrent programming. To avoid complex variable lifecycles and concurrent problems, as we'll see in later articles, prohibiting capture of mutable local variables is the intent of JDK8. <br>
+      <br>
+      In 2009，defining a lambda and declaring a variable which accepts a lambda can be as follow:<br>
+      <div class="courier" style="margin-left: 40px;"><span>#int(int) doubler = #(int x)(2 * x);</span><span><br>
+        </span><span>doubler.(3) // calling a lambda</span></div>
+      <br>
+      The above example is similar to the following code:<br>
+      <div class="courier" style="margin-left: 40px;"><span>int doubler(int x) {</span><span><br>
+        </span><span>&nbsp;&nbsp;&nbsp; return 2 * x;</span><span><br>
+        </span><span>}</span><span><br>
+        </span><span>doubler(3);</span></div>
+      <br>
+      A lambda with two int parameters and one returned int value is as follow:<br>
+      <div style="margin-left: 40px;"><span class="courier">#int(int, int) sum = #(int x, int y)(x + y)</span><span><br>
+        </span></div>
+      <br>
+      The above code like defining a method as follow:<br>
+      <div class="courier" style="margin-left: 40px;"><span>int sum(int x, int y) {</span><span><br>
+        </span><span>&nbsp;&nbsp;&nbsp; return x + y;</span><span><br>
+        </span><span>}</span></div>
+      <br>
+      Writing code similar to the <span class="courier">bubbleSort</span> function in <a
+        href="UnderstandingLambdaClosure4.html">Understanding Lambda/Closure, Part 4</a> is as follow:<br>
+      <div class="courier" style="margin-left: 40px;"><span>def bubbleSort(int[] arr, <strong>#boolean(int, int) order</strong>) {</span><span><br>
+        </span><span>&nbsp;&nbsp;&nbsp; ...</span><span><br>
+        </span><span>&nbsp;&nbsp;&nbsp; boolean o = <strong>order.(a, b)</strong>;</span><span><br>
+        </span><span>&nbsp;&nbsp;&nbsp; ...</span><span><br>
+        </span><span>}</span><span><br>
+        </span><span>int[] arr = new int[] {2, 5, 1, 7, 8};</span><span><br>
+        </span><span>bubbleSort(arr, <strong>#(int a, int b)(a &gt; b)</strong>);</span></div>
+      <br>
+      The point here is that, the old proposal needs a function type when declaring a variable which accepts a lambda. The syntax of declaring a function type places the returned type in the left side, but the syntax of defining a lambda places the function body in the right side. Think about a question: if we need a lambda to return a lambda, what will it looks? <br>
+      <div style="margin-left: 40px;"><span class="courier">##int(int)(int) sum = #(int x)(#(int y)(x + y));</span><span><br>
+        </span></div>
+      <br>
+      Oh...is this a C/C++ pointer? Another question is that, if we need to declare function types for lambda/closure, we'll need to create a bunch of new APIs specific for lambda/closure. The existing API will not benefit directly from lambda/closure. Solving complex syntax problems involving generics is also necessary. <br>
+      <br>
+      Fortunately, JDK8 doesn't adopt the syntax of specific function types. It uses a single abstract method type, lately called a functional interface, instead. We'll look at that in later articles. <br>
+      <br>
+      <br>
+      <p></p>
+      <p></p>
+      <ul>
+      </ul>
+    </div>
+    <div class="aside">
+      
+       <br>
+      <br>
+      
+       <br>
+      <br>
+      
+       <br>
+      <br>
+      <br>
+    </div>
+      </body>
+</html>

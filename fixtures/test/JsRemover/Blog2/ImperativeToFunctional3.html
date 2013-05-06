@@ -1,0 +1,183 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html dir="ltr" lang="en">
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <title>Notes: Imperative to Functional, Part 3</title>
+    <meta content="caterpillar" name="author">
+    <meta content="imperative functional python" name="keywords">
+    <link href="css/std.css" rel="stylesheet" type="text/css">
+  </head>
+  <body>
+    <div class="header">
+      <div class="hgroup">
+        <h3><a href="http://openhome.cc/eGossip/">From eGossip@Openhome</a></h3>
+        <h1><a href="index.html">Notes: From Imperative to Functional, Part 3<br>
+          </a></h1>
+      </div>
+    </div>
+    <div class="article">
+      <div align="right"><a href="http://www.javaworld.com.tw/roller/caterpillar/entry/%E5%BE%9E%E5%91%BD%E4%BB%A4%E5%BC%8F%E5%88%B0%E5%87%BD%E6%95%B8%E5%BC%8F_%E4%B8%89">中文</a><br>
+      </div>
+      <br>
+      The key point of functional programming is to decompose problems. An example to calculate the length of a list imperatively is as follows:<br>
+      <pre>def length(list):
+    c = 0
+    for i in list:
+        c += 1
+    return c<br></pre>
+      <br>
+      It's a common example to rewrite it functionally in articles talking about functional programming:<br>
+      <pre>def length(list):
+    return 0 if list == [] else 1 + length(list[1:])<br></pre>
+      <br>
+      You can pass a list to <span class="courier">length</span>. The concept here is very simple. If it's an empty list, <span
+        class="courier">length</span> returns 0. If a list is not empty, <span
+        class="courier">length</span> will plus 1 and the length of the tail list. This processing will continue until an empty list is reached. Similarly, how to sum up a list of integers? If it's written imperatively, it can be defined as follows:<br>
+      <pre>def sum(list):
+    acct = list[0]
+    for i in range(1, len(list)):
+        acct += list[i]
+    return acct<br></pre>
+      <br>
+      As '<a href="ImperativeToFunctional2.html">Notes: From Imperative to functional (2)</a>' mentioned, if you are using loops to process list elements sequentially, you can basically solve them by a recursive solution. You don't need counters. The previous <span
+        class="courier">length</span> is an example, while the above <span
+        class="courier">sum</span> can be changed as follows:<br>
+      <pre>def sum(list):
+    def rsum(lt, at):
+        return at if lt == [] else rsum(lt[1:], at + lt[0])
+    return rsum(list, 0)<br></pre>
+      <br>
+      Here, <span class="courier">rsum</span> feels like <span class="courier">length</span>. If you rewrite <span
+        class="courier">length</span> as follows:<br>
+      <pre>def length(list):
+    def rlen(lt, at):
+        return at if lt == [] else rlen(lt[1:], at + 1)
+    return rlen(list, 0)<br></pre>
+      <br>
+      Now, <span class="courier">rsum</span> and <span class="courier">rlen</span> has exactly the same structure. The differences are function names and ways to deal with the second argument before <span
+        class="courier">rsum</span> and <span class="courier">rlen</span> are called again. Why don't you write a generic <span
+        class="courier">foldLeft</span>?<br>
+      <pre>def foldLeft(lt, func, at):
+    return at if lt == [] else foldLeft(lt[1:], func, func(at, lt[0]))<br></pre>
+      <br>
+      Then <span class="courier">length</span> can be written as:<br>
+      <pre>def length(list):
+    return foldLeft([1, 2, 3], lambda at, elem: at + 1, 0)<br></pre>
+      <br>
+      And <span class="courier">sum</span> can be written as:<br>
+      <pre>def sum(list):
+    return foldLeft([1, 2, 3], lambda at, elem: at + elem, 0)<br></pre>
+      <br>
+      <span class="courier">foldLeft</span> is a really versatile function that can be used in millions of different ways. In Python, there's a <span
+        class="courier">functools.reduce</span> function, it's a function implemented in <span
+        class="courier">foldLeft</span> concepts<span class="courier"></span>. We've seen an example in '<a
+        href="ImperativeToFunctional1.html">Notes: From Imperative to functional (1)</a>'. If you want to calculate a value from a list by an iterative loop, you can try <span
+        class="courier">foldLeft</span>. But sometimes, the scenario is not as simple as <span
+        class="courier">sum</span> or <span class="courier">length</span>. As '<a
+        href="ImperativeToFunctional1.html">Notes: From Imperative to Functional (1)</a>' mentioned, to change imperative code into functional style, you need cleaner code and sensitivity of control flows, such as:<br>
+      <pre>def eval(expr):
+    stack = []
+    for c in toPostfix(expr):
+        if c in "+-*/":
+            p2 = stack.pop()
+            p1 = stack.pop()
+            stack.append({'+': float.__add__,
+                          '-': float.__sub__,
+                          '*': float.__mul__,
+                          '/': float.__floordiv__}[c](p1, p2))
+        else:
+            stack.append(float(c))
+            
+    return stack[-1]<br></pre>
+      <br>
+      <span class="courier">eval</span> is implemented imperatively. Can you figure out where <span
+        class="courier">foldLeft</span> can be applied? They are in <span
+        class="courier">for c in toPostfix(expr)</span> and <span class="courier">return stack[-1]</span>. Simply speaking, iterates <span
+        class="courier">expr</span>, and then takes the latest value of <span
+        class="courier">stack</span>. If you've a beginner of functional programming, I believe it's difficult to tell it out. I recommend you to start from simple examples, such as <span
+        class="courier">length</span> and <span class="courier">sum</span>. These examples have simple control flows. After enough exercises, you'll have feeling with complex flows. <br>
+      <br>
+      So, how to modify the above <span class="courier">eval</span> by <span
+        class="courier">foldLeft</span>? The beginning <span class="courier">stack</span> has told you. The initial state of <span
+        class="courier">stack</span> is empty. Huh? But, <span class="courier">expr</span> is not a list! The initial value should be an list element, isn't it? Or at least, its type should be the same as that of list elements. Who said that? Not true. The initial and return value of <span
+        class="courier">foldLeft</span> can have different types from list elements. Here, the initial and return type would be <span
+        class="courier">list</span>. The next step is to pull out the function passed in:<br>
+      <pre>from functools import reduce
+def eval(expr):
+    def doStack(stack, c):
+        if c in "+-*/":
+            return stack[0:-2] + [
+                {'+': float.__add__,
+                 '-': float.__sub__,
+                 '*': float.__mul__,
+                 '/': float.__floordiv__}[c](stack[-2], stack[-1])]
+        else:
+            return stack + [float(c)]
+    return reduce(doStack, toPostfix(expr), [])[-1]<br></pre>
+      <br>
+      The above example is modified directly by <span class="courier">reduce</span>, Python's <span
+        class="courier">foldLeft</span> implementation. As mentioned previously, if you use an iterative loop to calculate a value, you can rewrite it with <span
+        class="courier">foldLeft</span>. But it's not recommended that everything is solved by <span
+        class="courier">foldLeft</span>. Actually, <span class="courier">procExpr</span> in '<a
+        href="ImperativeToFunctional2.html">Notes: From Imperative to functional (2)</a>' could be implemented by <span
+        class="courier">foldLeft</span>, but readability is not good. <span
+        class="courier">foldLeft</span> is good to reuse control flows about getting a value from one iteration. But to some extent, it would have poor readability. Deliberate upon reusability and readability while considering <span
+        class="courier">foldLeft</span>. <br>
+      <br>
+      Of course, if there is <span class="courier">foldLeft</span>, there's also <span
+        class="courier">foldRight</span>. You can implement it by yourself. <span
+        class="courier">foldLeft</span> and <span class="courier">foldRight</span> are interchangeable if there's no consideration for associations. The other consideration is whether the type of lists is an algebraic data type. If you're concatenating two lists with <span
+        class="courier">+</span> while calling <span class="courier">foldLeft</span>, and their type is an algebraic data type, you'll find performance issue while the right list of <span
+        class="courier">+</span> is long. If you try <span class="courier">foldRight</span> and <span
+        class="courier">cons(:)</span>, it will have better performance. I'll talk about this afterward.<br>
+      <br>
+      <p></p>
+      <p></p>
+      <ul>
+      </ul>
+    </div>
+    <div class="aside">
+      <script type="text/javascript"><!--
+google_ad_client = "pub-9750319131714390";
+google_ad_width = 160;
+google_ad_height = 600;
+google_ad_format = "160x600_as";
+google_ad_type = "text_image";
+google_ad_channel = "";
+//-->
+      </script>
+      <script type="text/javascript" src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+      </script> <br>
+      <br>
+      <script type="text/javascript"><!--
+google_ad_client = "pub-9750319131714390";
+google_ad_width = 160;
+google_ad_height = 600;
+google_ad_format = "160x600_as";
+google_ad_type = "text_image";
+google_ad_channel = "";
+//-->
+      </script>
+      <script type="text/javascript" src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+      </script> <br>
+      <br>
+      <script type="text/javascript"><!--
+google_ad_client = "pub-9750319131714390";
+google_ad_width = 160;
+google_ad_height = 600;
+google_ad_format = "160x600_as";
+google_ad_type = "text_image";
+google_ad_channel = "";
+//-->
+      </script>
+      <script type="text/javascript" src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+      </script> <br>
+      <br>
+      <br>
+    </div>
+    <script src="http://www.google-analytics.com/urchin.js" type="text/javascript">
+</script> <script type="text/javascript">
+_uacct = "UA-143766-1";
+urchinTracker();
+</script> </body>
+</html>

@@ -33,21 +33,21 @@ public class ArgsTest {
     @Test
     public void testIsSrcRegularFile() {   
         Args args = new Args(new String[] {"UTF-8", 
-            "fixtures/removed/Blog/index.html"});
+            "fixtures/expected/Blog/index.html"});
         assertTrue(args.isSrcRegularFile());
     }
     
     @Test
     public void testIsSrcDirectory() {   
         Args args = new Args(new String[] {"UTF-8", 
-            "fixtures/removed/Blog"});
+            "fixtures/expected/Blog"});
         assertTrue(args.isSrcDirectory());
     }
     
     @Test
     public void testHasSameSrcDir() throws IOException {   
         Args args = new Args(new String[] {"UTF-8", 
-            "fixtures/removed/Blog", "fixtures/removed/Blog"});
+            "fixtures/expected/Blog", "fixtures/expected/Blog"});
         assertTrue(args.hasSameSrcDest());
     }
 }

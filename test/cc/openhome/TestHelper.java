@@ -9,6 +9,10 @@ import java.nio.file.Paths;
 import static org.junit.Assert.assertEquals;
 
 public class TestHelper {
+    public static void assertPageEquals() {
+        
+    }
+    
     public static String readAllText(Path file, String charsetName) throws IOException {
         return new String(Files.readAllBytes(file), charsetName);
     }

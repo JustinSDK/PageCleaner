@@ -6,14 +6,14 @@ import org.junit.Before;
 import org.junit.Test;
  
 public class JsRemoverTest {
-    private String removedDir;
-    private String removedFile;
+    private String expectedPagesDir;
+    private String expectedPage;
     private String charsetName;
     
     @Before
     public void setUp() {
-        removedDir = "fixtures/removed/Blog";
-        removedFile = "fixtures/removed/Blog/index.html";
+        expectedPagesDir = "fixtures/expected/Blog";
+        expectedPage = "fixtures/expected/Blog/index.html";
         charsetName = "UTF-8";
     }
     
@@ -23,7 +23,7 @@ public class JsRemoverTest {
         JsRemover.main(new String[] {charsetName, srcFile1});
         
         String result =  readAllText(Paths.get(srcFile1), charsetName);
-        String expResult = readAllText(Paths.get(removedFile), charsetName);
+        String expResult = readAllText(Paths.get(expectedPage), charsetName);
         assertEquals(expResult, result);
         
         String srcFile2 = "fixtures/test/JsRemover/index2.html";
@@ -31,7 +31,7 @@ public class JsRemoverTest {
         JsRemover.main(new String[] {charsetName, srcFile2, destFile2});
         
         result =  readAllText(Paths.get(destFile2), charsetName);
-        expResult = readAllText(Paths.get(removedFile), charsetName);
+        expResult = readAllText(Paths.get(expectedPage), charsetName);
         assertEquals(expResult, result);
     }
    
@@ -39,11 +39,11 @@ public class JsRemoverTest {
     public void testMainDir() throws Exception {
         String srcDir1 = "fixtures/test/JsRemover/Blog1";
         JsRemover.main(new String[] {charsetName, srcDir1});     
-        assertRemoved(Paths.get(srcDir1), "test/JsRemover/Blog1", "removed/Blog", charsetName);
+        assertRemoved(Paths.get(srcDir1), "test/JsRemover/Blog1", "expected/Blog", charsetName);
    
         String srcDir2 = "fixtures/test/JsRemover/Blog2";
         String destDir2 = "fixtures/dest/JsRemover/Blog2";
         JsRemover.main(new String[] {charsetName, srcDir2, destDir2});        
-        assertRemoved(Paths.get(destDir2), "dest/JsRemover/Blog2", "removed/Blog", charsetName);
+        assertRemoved(Paths.get(destDir2), "dest/JsRemover/Blog2", "expected/Blog", charsetName);
     }
 }
