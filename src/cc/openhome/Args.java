@@ -1,8 +1,9 @@
 package cc.openhome;
 
-import java.io.IOException;
-import java.nio.file.*;
-import static java.nio.file.Files.*;
+import static java.nio.file.Files.isDirectory;
+import static java.nio.file.Files.isRegularFile;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 public class Args {
     public final String charsetName;

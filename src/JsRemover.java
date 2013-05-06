@@ -1,9 +1,10 @@
 
-import static cc.openhome.AdSenseRemover.*;
+import static cc.openhome.AdSenseRemover.removeJsDir;
+import static cc.openhome.AdSenseRemover.removeJsDirAndSaveAs;
 import cc.openhome.Args;
+import cc.openhome.Page;
 import java.io.IOException;
 import static java.lang.System.out;
-import static java.nio.file.Files.isDirectory;
 
 public class JsRemover {
     public static void main(String[] args) throws IOException {
@@ -39,7 +40,7 @@ public class JsRemover {
         if (args.isSrcDirectory()) {
             removeJsDir(args.src, args.charsetName);
         } else if(args.isSrcRegularFile()) {
-            removeFileJs(args.src, args.charsetName);
+            new Page(args.src, args.charsetName).cleanJs();
         }
     }
     
@@ -48,7 +49,8 @@ public class JsRemover {
         if (args.isSrcDirectory()) {
             removeJsDirAndSaveAs(args.src, args.dest, args.charsetName);
         } else if (args.isSrcRegularFile()) {
-            removeFileJsAndSaveAs(args.src, args.dest, args.charsetName);
+            new Page(args.src, args.charsetName).copyTo(args.dest);
+            new Page(args.dest, args.charsetName).cleanJs();
         }
     }
 }
