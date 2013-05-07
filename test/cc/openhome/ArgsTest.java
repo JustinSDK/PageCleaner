@@ -1,7 +1,7 @@
 package cc.openhome;
 
 import java.io.IOException;
-import java.nio.file.Paths;
+import static java.nio.file.Paths.get;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import org.junit.Test;
@@ -14,8 +14,8 @@ public class ArgsTest {
         Args args = new Args(new String[] {arg1, arg2});
         
         assertEquals(args.charsetName, arg1);
-        assertEquals(args.src, Paths.get(arg2));
-        assertEquals(args.dest, Paths.get(arg2));
+        assertEquals(args.src, get(arg2));
+        assertEquals(args.dest, get(arg2));
     }
     
     @Test
@@ -26,8 +26,8 @@ public class ArgsTest {
         Args args = new Args(new String[] {arg1, arg2, arg3});
         
         assertEquals(args.charsetName, arg1);
-        assertEquals(args.src, Paths.get(arg2));
-        assertEquals(args.dest, Paths.get(arg3));
+        assertEquals(args.src, get(arg2));
+        assertEquals(args.dest, get(arg3));
     }
     
     @Test
@@ -45,9 +45,9 @@ public class ArgsTest {
     }
     
     @Test
-    public void testHasSameSrcDir() throws IOException {   
+    public void testHasDiffSrcDir() throws IOException {   
         Args args = new Args(new String[] {"UTF-8", 
-            "fixtures/expected/Blog", "fixtures/expected/Blog"});
-        assertTrue(args.hasSameSrcDest());
+            "fixtures/expected/Blog", "fixtures/expected/Blog2"});
+        assertTrue(args.hasDiffSrcDest());
     }
 }

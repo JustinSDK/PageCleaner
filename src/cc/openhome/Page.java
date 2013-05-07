@@ -1,12 +1,10 @@
 package cc.openhome;
 
 import java.io.IOException;
-import java.nio.file.Files;
 import static java.nio.file.Files.*;
 import java.nio.file.Path;
 import static java.nio.file.StandardOpenOption.CREATE;
 import static java.nio.file.StandardOpenOption.TRUNCATE_EXISTING;
-import java.util.Objects;
 import java.util.regex.Pattern;
 import static java.util.regex.Pattern.compile;
 
@@ -17,38 +15,25 @@ public class Page {
         return jsRegex.matcher(html).replaceAll("");
     }
     
-    private Path path;
+    private Path file;
     private String charsetName;
     
     public Page(Path path, String charsetName) {
-        this.path = path;
+        this.file = path;
         this.charsetName = charsetName;
     }
 
     public void copyTo(Path dest) throws IOException {
         createDirectories(dest.getParent());
-        copy(path, dest);
+        copy(file, dest);
     }
     
     public void cleanJs() throws IOException {
         String noJsHtml = cleanHtmlJs(readHtml());
-        write(path, noJsHtml.getBytes(charsetName), TRUNCATE_EXISTING, CREATE);
+        write(file, noJsHtml.getBytes(charsetName), TRUNCATE_EXISTING, CREATE);
     }
     
     public String readHtml() throws IOException {
-        return new String(Files.readAllBytes(path), charsetName);
-    }
-
-    public boolean htmlEquals(final Page other) throws RuntimeException {
-        if (!Objects.equals(this.charsetName, other.charsetName)) {
-            return false;
-        }
-        try {
-            String html = readHtml();
-            String otherHtml = other.readHtml();
-            return html.equals(otherHtml);
-        } catch (IOException ex) {
-            throw new RuntimeException(ex);
-        }
+        return new String(readAllBytes(file), charsetName);
     }
 }

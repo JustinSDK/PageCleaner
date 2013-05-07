@@ -24,7 +24,7 @@ public class Args {
         return isDirectory(src);
     }
     
-    public boolean hasSameSrcDest() {
-        return src.equals(dest);
+    public boolean hasDiffSrcDest() {
+        return !src.equals(dest);
     }
 }
