@@ -10,6 +10,12 @@ import static org.junit.Assert.assertEquals;
 
 public class TestHelper {
     
+    public static void assertContentEquals(Path expectedPath, Path resultPath, String charsetName) throws IOException {
+        String result = readAllText(resultPath, charsetName);
+        String expResult = readAllText(expectedPath, charsetName);
+        assertEquals(expResult, result);
+    }
+    
     public static String readAllText(Path file, String charsetName) throws IOException {
         return new String(Files.readAllBytes(file), charsetName);
     }

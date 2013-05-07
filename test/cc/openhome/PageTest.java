@@ -1,5 +1,6 @@
 package cc.openhome;
 
+import static cc.openhome.TestHelper.assertContentEquals;
 import static cc.openhome.TestHelper.readAllText;
 import java.io.IOException;
 import java.nio.file.Path;
@@ -48,16 +49,16 @@ public class PageTest {
     public void testCopyTo() throws IOException {
         Path destPath = Paths.get("fixtures/test/dest/Page/index1.html");
         Page srcPage = new Page(srcPath, charsetName);
-        Page destPage = new Page(destPath, charsetName);
         srcPage.copyTo(destPath);
-        assertTrue(srcPage.htmlEquals(destPage));
+        
+        assertContentEquals(srcPath, destPath, charsetName);
     }
     
     @Test
     public void testCleanJs() throws IOException {
         Page resultPage = new Page(srcPath, charsetName);
         resultPage.cleanJs();
-        Page expectedPage = new Page(expectedPath, charsetName);
-        assertTrue(expectedPage.htmlEquals(resultPage));
+        
+        assertContentEquals(expectedPath, srcPath, charsetName);
     }
 }

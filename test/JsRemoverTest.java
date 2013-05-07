@@ -1,5 +1,6 @@
 import static cc.openhome.TestHelper.assertRemoved;
 import static cc.openhome.TestHelper.readAllText;
+import static cc.openhome.TestHelper.assertContentEquals;
 import java.nio.file.Paths;
 import static org.junit.Assert.assertEquals;
 import org.junit.Before;
@@ -7,13 +8,13 @@ import org.junit.Test;
  
 public class JsRemoverTest {
     private String expectedPagesDir;
-    private String expectedPage;
+    private String expectedPathName;
     private String charsetName;
     
     @Before
     public void setUp() {
         expectedPagesDir = "fixtures/expected/Blog";
-        expectedPage = "fixtures/expected/Blog/index.html";
+        expectedPathName = "fixtures/expected/Blog/index.html";
         charsetName = "UTF-8";
     }
     
@@ -22,17 +23,13 @@ public class JsRemoverTest {
         String srcFile1 = "fixtures/test/JsRemover/index1.html";
         JsRemover.main(new String[] {charsetName, srcFile1});
         
-        String result =  readAllText(Paths.get(srcFile1), charsetName);
-        String expResult = readAllText(Paths.get(expectedPage), charsetName);
-        assertEquals(expResult, result);
+        assertContentEquals(Paths.get(expectedPathName), Paths.get(srcFile1), charsetName);
         
         String srcFile2 = "fixtures/test/JsRemover/index2.html";
         String destFile2 = "fixtures/dest/JsRemover/index2.html";
         JsRemover.main(new String[] {charsetName, srcFile2, destFile2});
         
-        result =  readAllText(Paths.get(destFile2), charsetName);
-        expResult = readAllText(Paths.get(expectedPage), charsetName);
-        assertEquals(expResult, result);
+        assertContentEquals(Paths.get(expectedPathName), Paths.get(destFile2), charsetName);
     }
    
     @Test
